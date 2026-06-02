@@ -12,6 +12,10 @@ import { SectionHeader } from '../ui/SectionHeader';
 interface PaymentBreakdownChartProps {
   segments: DonutSegment[];
   lifetimeCostLabel: string;
+  title?: string;
+  subtitle?: string;
+  centerTitle?: string;
+  centerSubtitle?: string;
 }
 
 const CHART_SIZE = 220;
@@ -23,6 +27,10 @@ const CHART_CENTER = CHART_SIZE / 2;
 export function PaymentBreakdownChart({
   segments,
   lifetimeCostLabel,
+  title = 'Lifetime Cost',
+  subtitle = 'Total of all payments',
+  centerTitle = 'Lifetime',
+  centerSubtitle = 'Cost',
 }: PaymentBreakdownChartProps) {
   const total = useMemo(
     () => segments.reduce((sum, segment) => sum + segment.value, 0),
@@ -46,7 +54,7 @@ export function PaymentBreakdownChart({
 
   return (
     <Card>
-      <SectionHeader title="Lifetime Cost" subtitle="Total of all payments" />
+      <SectionHeader title={title} subtitle={subtitle} />
       <View style={styles.chartRow}>
         <View style={styles.chartWrap}>
           <Svg width={CHART_SIZE} height={CHART_SIZE}>
@@ -76,8 +84,8 @@ export function PaymentBreakdownChart({
             </G>
           </Svg>
           <View style={styles.centerLabel}>
-            <Text style={styles.centerTitle}>Lifetime</Text>
-            <Text style={styles.centerSubtitle}>Cost</Text>
+            <Text style={styles.centerTitle}>{centerTitle}</Text>
+            <Text style={styles.centerSubtitle}>{centerSubtitle}</Text>
           </View>
         </View>
         <View style={styles.legend}>

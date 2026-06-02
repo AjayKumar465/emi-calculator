@@ -1,0 +1,33 @@
+import { AmortizationYear, DonutSegment, MonthYear, SummaryLineItem } from './calculator';
+
+export interface CreditCardCalculatorInputs {
+  transactionAmount: number;
+  interestRate: number;
+  tenureMonths: number;
+  processingFeePreGst: number;
+  gstRate: number;
+  startDate: MonthYear;
+}
+
+export interface CreditCardChartPoint {
+  label: string;
+  principal: number;
+  interest: number;
+  gstOnInterest: number;
+  balance: number;
+  totalPayment: number;
+}
+
+export interface CreditCardCalculatorResult {
+  emi: number;
+  apr: number;
+  processingFeeGst: number;
+  totalProcessingFees: number;
+  totalInterest: number;
+  totalGstOnInterest: number;
+  totalPayment: number;
+  amortizationYears: AmortizationYear[];
+  chartData: CreditCardChartPoint[];
+  donutSegments: DonutSegment[];
+  summaryItems: SummaryLineItem[];
+}

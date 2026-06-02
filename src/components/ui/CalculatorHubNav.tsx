@@ -1,37 +1,45 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Link } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Link, Href } from 'expo-router';
 
 import { colors, fonts, fontSizes, radii, spacing } from '../../theme';
 
 interface CalculatorHubNavProps {
-  active: 'home-loan' | 'loan-suite';
+  active: 'home-loan' | 'loan-suite' | 'credit-card';
 }
 
-export function CalculatorHubNav({ active }: CalculatorHubNavProps) {
-  const homeLoanActive = active === 'home-loan';
-  const loanSuiteActive = active === 'loan-suite';
+const TABS: { key: CalculatorHubNavProps['active']; href: Href; label: string }[] = [
+  { key: 'home-loan', href: '/calculator', label: 'Home Loan' },
+  { key: 'loan-suite', href: '/calculator/loan', label: 'Loan Suite' },
+  { key: 'credit-card', href: '/calculator/credit-card', label: 'Credit Card' },
+];
 
+export function CalculatorHubNav({ active }: CalculatorHubNavProps) {
   return (
-    <View style={styles.row}>
-      <Link href="/calculator" asChild>
-        <Pressable style={homeLoanActive ? styles.linkActive : styles.link}>
-          <Text style={homeLoanActive ? styles.linkTextActive : styles.linkText}>Home Loan</Text>
-        </Pressable>
-      </Link>
-      <Link href="/calculator/loan" asChild>
-        <Pressable style={loanSuiteActive ? styles.linkActive : styles.link}>
-          <Text style={loanSuiteActive ? styles.linkTextActive : styles.linkText}>Loan Suite</Text>
-        </Pressable>
-      </Link>
-    </View>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
+      <View style={styles.row}>
+        {TABS.map((tab) => {
+          const isActive = active === tab.key;
+          return (
+            <Link key={tab.key} href={tab.href} asChild>
+              <Pressable style={isActive ? styles.linkActive : styles.link}>
+                <Text style={isActive ? styles.linkTextActive : styles.linkText}>{tab.label}</Text>
+              </Pressable>
+            </Link>
+          );
+        })}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    marginBottom: spacing.lg,
+  },
   row: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginBottom: spacing.lg,
+    paddingBottom: spacing.xs,
   },
   link: {
     paddingHorizontal: spacing.md,

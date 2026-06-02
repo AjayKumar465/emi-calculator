@@ -15,7 +15,7 @@ import {
   LoanCalculatorResult,
   ResolvedLoanParameters,
 } from '../types/loanCalculator';
-import { addMonths } from './format';
+import { addMonths, roundAmount } from './format';
 
 function getTenureMonths(tenure: number, mode: TenureMode): number {
   return mode === 'years' ? Math.round(tenure * 12) : Math.round(tenure);
@@ -37,15 +37,17 @@ function emiFromPrincipal(
 
   const rate = monthlyRate(annualRate);
   if (rate === 0) {
-    return principal / months;
+    return roundAmount(principal / months);
   }
 
   const factor = Math.pow(1 + rate, months);
   if (scheme === 'advance') {
-    return (principal * rate * Math.pow(1 + rate, months - 1)) / (factor - 1);
+    return roundAmount(
+      (principal * rate * Math.pow(1 + rate, months - 1)) / (factor - 1),
+    );
   }
 
-  return (principal * rate * factor) / (factor - 1);
+  return roundAmount((principal * rate * factor) / (factor - 1));
 }
 
 function principalFromEmi(
@@ -60,15 +62,15 @@ function principalFromEmi(
 
   const rate = monthlyRate(annualRate);
   if (rate === 0) {
-    return emi * months;
+    return roundAmount(emi * months);
   }
 
   const factor = Math.pow(1 + rate, months);
   if (scheme === 'advance') {
-    return (emi * (factor - 1)) / (rate * Math.pow(1 + rate, months - 1));
+    return roundAmount((emi * (factor - 1)) / (rate * Math.pow(1 + rate, months - 1)));
   }
 
-  return (emi * (factor - 1)) / (rate * factor);
+  return roundAmount((emi * (factor - 1)) / (rate * factor));
 }
 
 function tenureFromEmi(
@@ -121,7 +123,7 @@ function interestRateFromEmi(
     }
   }
 
-  return (low + high) / 2;
+  return roundAmount((low + high) / 2);
 }
 
 function calculateLoanApr(
@@ -159,7 +161,7 @@ function calculateLoanApr(
     }
   }
 
-  return ((low + high) / 2) * 12 * 100;
+  return roundAmount(((low + high) / 2) * 12 * 100);
 }
 
 function resolveParameters(inputs: LoanCalculatorInputs): ResolvedLoanParameters {
@@ -259,13 +261,13 @@ function buildSchedule(
     schedule.push({
       monthIndex,
       date: addMonths(startDate, monthIndex),
-      principal: principalPaid,
-      interest,
-      prepayment: extra,
+      principal: roundAmount(principalPaid),
+      interest: roundAmount(interest),
+      prepayment: roundAmount(extra),
       taxesInsuranceMaintenance: 0,
-      totalPayment: principalPaid + interest + extra,
-      balance,
-      loanPaidPercent,
+      totalPayment: roundAmount(principalPaid + interest + extra),
+      balance: roundAmount(balance),
+      loanPaidPercent: roundAmount(loanPaidPercent),
     });
 
     if (extraMonthlyPayment > 0 && balance <= 0.01) {
@@ -291,13 +293,13 @@ function aggregateYears(months: AmortizationMonth[]): AmortizationYear[] {
       const lastMonth = yearMonths[yearMonths.length - 1];
       return {
         year,
-        principal: yearMonths.reduce((sum, item) => sum + item.principal, 0),
-        interest: yearMonths.reduce((sum, item) => sum + item.interest, 0),
-        prepayment: yearMonths.reduce((sum, item) => sum + item.prepayment, 0),
+        principal: roundAmount(yearMonths.reduce((sum, item) => sum + item.principal, 0)),
+        interest: roundAmount(yearMonths.reduce((sum, item) => sum + item.interest, 0)),
+        prepayment: roundAmount(yearMonths.reduce((sum, item) => sum + item.prepayment, 0)),
         taxesInsuranceMaintenance: 0,
-        totalPayment: yearMonths.reduce((sum, item) => sum + item.totalPayment, 0),
-        balance: lastMonth.balance,
-        loanPaidPercent: lastMonth.loanPaidPercent,
+        totalPayment: roundAmount(yearMonths.reduce((sum, item) => sum + item.totalPayment, 0)),
+        balance: roundAmount(lastMonth.balance),
+        loanPaidPercent: roundAmount(lastMonth.loanPaidPercent),
         months: yearMonths,
       };
     });
@@ -399,10 +401,12 @@ export function calculateLoanCalculator(inputs: LoanCalculatorInputs): LoanCalcu
     inputs.emiScheme,
   );
 
-  const totalInterest = schedule.reduce((sum, row) => sum + row.interest, 0);
-  const totalPrepayment = schedule.reduce((sum, row) => sum + row.prepayment, 0);
-  const totalPrincipal = schedule.reduce((sum, row) => sum + row.principal, 0);
-  const totalPayment = totalPrincipal + totalInterest + totalPrepayment + inputs.processingFees;
+  const totalInterest = roundAmount(schedule.reduce((sum, row) => sum + row.interest, 0));
+  const totalPrepayment = roundAmount(schedule.reduce((sum, row) => sum + row.prepayment, 0));
+  const totalPrincipal = roundAmount(schedule.reduce((sum, row) => sum + row.principal, 0));
+  const totalPayment = roundAmount(
+    totalPrincipal + totalInterest + totalPrepayment + inputs.processingFees,
+  );
   const actualMonths = schedule.length;
   const loanApr = calculateLoanApr(
     resolved.principal,

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
@@ -10,9 +11,11 @@ import { LoanModeTabs } from '@/src/components/loan/LoanModeTabs';
 import { LoanResultSummary } from '@/src/components/loan/LoanResultSummary';
 import { AppHeader } from '@/src/components/ui/AppHeader';
 import { CalculatorHubNav } from '@/src/components/ui/CalculatorHubNav';
+import { ExportActions } from '@/src/components/ui/ExportActions';
 import { GlossyBackground } from '@/src/components/ui/GlossyBackground';
 import { useLoanCalculator } from '@/src/hooks/useLoanCalculator';
 import { spacing } from '@/src/theme';
+import { buildLoanSuiteExportPayload } from '@/src/utils/export/buildExportPayloads';
 import { LOAN_MODE_TABS } from '@/src/utils/loanCalculator';
 import { createResponsiveStyles, media } from '@/src/theme/responsive';
 
@@ -33,6 +36,11 @@ export default function LoanCalculatorScreen() {
     result.amortizationYears.length > 0
       ? result.amortizationYears[result.amortizationYears.length - 1].loanPaidPercent
       : 0;
+
+  const exportPayload = useMemo(
+    () => buildLoanSuiteExportPayload(inputs, result, formattedSummary),
+    [inputs, result, formattedSummary],
+  );
 
   const inputColumn = (
     <>
@@ -65,6 +73,9 @@ export default function LoanCalculatorScreen() {
       </Animated.View>
       <Animated.View entering={FadeInDown.delay(240).springify().damping(16)} style={styles.section}>
         <AmortizationTable years={result.amortizationYears} />
+      </Animated.View>
+      <Animated.View entering={FadeInDown.delay(280).springify().damping(16)} style={styles.section}>
+        <ExportActions payload={exportPayload} />
       </Animated.View>
     </>
   );

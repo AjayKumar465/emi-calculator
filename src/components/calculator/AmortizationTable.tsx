@@ -9,25 +9,31 @@ import { SectionHeader } from '../ui/SectionHeader';
 
 interface AmortizationTableProps {
   years: AmortizationYear[];
+  thirdColumnLabel?: string;
 }
 
-const HEADER_COLUMNS = [
-  { key: 'year', label: 'Year', flex: 0.8 },
-  { key: 'principal', label: 'Principal', flex: 1, color: colors.chart.principal },
-  { key: 'interest', label: 'Interest', flex: 1, color: colors.chart.interest },
-  {
-    key: 'taxes',
-    label: 'Taxes/Ins/Maint',
-    flex: 1.1,
-    color: colors.chart.taxesInsurance,
-  },
-  { key: 'total', label: 'Total', flex: 1, color: colors.tealAccent },
-  { key: 'balance', label: 'Balance', flex: 1, color: colors.chart.balance },
-  { key: 'paid', label: 'Paid %', flex: 0.8, color: colors.tealAccent },
-];
+const DEFAULT_THIRD_COLUMN = 'Taxes/Ins/Maint';
 
-export function AmortizationTable({ years }: AmortizationTableProps) {
+export function AmortizationTable({
+  years,
+  thirdColumnLabel = DEFAULT_THIRD_COLUMN,
+}: AmortizationTableProps) {
   const [expandedYear, setExpandedYear] = useState<number | null>(null);
+
+  const headerColumns = [
+    { key: 'year', label: 'Year', flex: 0.8 },
+    { key: 'principal', label: 'Principal (A)', flex: 1, color: colors.chart.principal },
+    { key: 'interest', label: 'Interest (B)', flex: 1, color: colors.chart.interest },
+    {
+      key: 'taxes',
+      label: thirdColumnLabel,
+      flex: 1.1,
+      color: colors.chart.taxesInsurance,
+    },
+    { key: 'total', label: 'Total Payment', flex: 1, color: colors.tealAccent },
+    { key: 'balance', label: 'Balance', flex: 1, color: colors.chart.balance },
+    { key: 'paid', label: 'Loan Paid To Date', flex: 1, color: colors.tealAccent },
+  ];
 
   const toggleYear = useCallback((year: number) => {
     setExpandedYear((current) => (current === year ? null : year));
@@ -42,7 +48,7 @@ export function AmortizationTable({ years }: AmortizationTableProps) {
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.table}>
           <View style={styles.headerRow}>
-            {HEADER_COLUMNS.map((column) => (
+            {headerColumns.map((column) => (
               <Text
                 key={column.key}
                 style={[
@@ -84,7 +90,7 @@ export function AmortizationTable({ years }: AmortizationTableProps) {
                     {formatCurrency(yearRow.balance)}
                   </Text>
                   <Text style={[styles.cell, styles.mono, { flex: 0.8 }]}>
-                    {formatPercent(yearRow.loanPaidPercent, 1)}
+                    {formatPercent(yearRow.loanPaidPercent)}
                   </Text>
                 </Pressable>
                 {expanded
@@ -109,7 +115,7 @@ export function AmortizationTable({ years }: AmortizationTableProps) {
                           {formatCurrency(month.balance)}
                         </Text>
                         <Text style={[styles.monthCell, styles.mono, { flex: 0.8 }]}>
-                          {formatPercent(month.loanPaidPercent, 1)}
+                          {formatPercent(month.loanPaidPercent)}
                         </Text>
                       </View>
                     ))

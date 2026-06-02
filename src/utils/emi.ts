@@ -10,7 +10,7 @@ import {
   Prepayments,
   ValueMode,
 } from '../types/calculator';
-import { addMonths, monthYearToIndex } from './format';
+import { addMonths, monthYearToIndex, roundAmount } from './format';
 
 function resolveModeValue(
   base: number,
@@ -38,7 +38,7 @@ function calculateEmi(principal: number, annualRate: number, months: number): nu
   }
 
   const factor = Math.pow(1 + monthlyRate, months);
-  return (principal * monthlyRate * factor) / (factor - 1);
+  return roundAmount((principal * monthlyRate * factor) / (factor - 1));
 }
 
 function isSameOrAfter(current: MonthYear, target: MonthYear): boolean {
@@ -88,7 +88,7 @@ function getPrepaymentForMonth(
     total += prepayments.oneTime.amount;
   }
 
-  return total;
+  return roundAmount(total);
 }
 
 function aggregateYears(months: AmortizationMonth[]): AmortizationYear[] {
@@ -106,16 +106,15 @@ function aggregateYears(months: AmortizationMonth[]): AmortizationYear[] {
       const lastMonth = yearMonths[yearMonths.length - 1];
       return {
         year,
-        principal: yearMonths.reduce((sum, item) => sum + item.principal, 0),
-        interest: yearMonths.reduce((sum, item) => sum + item.interest, 0),
-        prepayment: yearMonths.reduce((sum, item) => sum + item.prepayment, 0),
-        taxesInsuranceMaintenance: yearMonths.reduce(
-          (sum, item) => sum + item.taxesInsuranceMaintenance,
-          0,
+        principal: roundAmount(yearMonths.reduce((sum, item) => sum + item.principal, 0)),
+        interest: roundAmount(yearMonths.reduce((sum, item) => sum + item.interest, 0)),
+        prepayment: roundAmount(yearMonths.reduce((sum, item) => sum + item.prepayment, 0)),
+        taxesInsuranceMaintenance: roundAmount(
+          yearMonths.reduce((sum, item) => sum + item.taxesInsuranceMaintenance, 0),
         ),
-        totalPayment: yearMonths.reduce((sum, item) => sum + item.totalPayment, 0),
-        balance: lastMonth.balance,
-        loanPaidPercent: lastMonth.loanPaidPercent,
+        totalPayment: roundAmount(yearMonths.reduce((sum, item) => sum + item.totalPayment, 0)),
+        balance: roundAmount(lastMonth.balance),
+        loanPaidPercent: roundAmount(lastMonth.loanPaidPercent),
         months: yearMonths,
       };
     });
@@ -192,14 +191,15 @@ export function calculateEMI(inputs: CalculatorInputs): CalculatorResult {
     schedule.push({
       monthIndex,
       date,
-      principal,
-      interest,
-      prepayment,
-      taxesInsuranceMaintenance: monthlyTaxesInsuranceMaintenance,
-      totalPayment:
+      principal: roundAmount(principal),
+      interest: roundAmount(interest),
+      prepayment: roundAmount(prepayment),
+      taxesInsuranceMaintenance: roundAmount(monthlyTaxesInsuranceMaintenance),
+      totalPayment: roundAmount(
         principal + interest + prepayment + monthlyTaxesInsuranceMaintenance,
-      balance,
-      loanPaidPercent,
+      ),
+      balance: roundAmount(balance),
+      loanPaidPercent: roundAmount(loanPaidPercent),
     });
   }
 
@@ -210,20 +210,22 @@ export function calculateEMI(inputs: CalculatorInputs): CalculatorResult {
       : 0;
 
   const paymentBreakdown: PaymentBreakdown = {
-    downPaymentAndFees:
+    downPaymentAndFees: roundAmount(
       downPaymentAmount + loan.processingFees + upfrontCostsAmount,
-    principal: totalPrincipalPaid,
-    prepayments: totalPrepayments,
-    interest: totalInterestPaid,
-    taxesInsuranceMaintenance: totalTaxesInsuranceMaintenance,
-    lifetimeCost:
+    ),
+    principal: roundAmount(totalPrincipalPaid),
+    prepayments: roundAmount(totalPrepayments),
+    interest: roundAmount(totalInterestPaid),
+    taxesInsuranceMaintenance: roundAmount(totalTaxesInsuranceMaintenance),
+    lifetimeCost: roundAmount(
       downPaymentAmount +
-      loan.processingFees +
-      upfrontCostsAmount +
-      totalPrincipalPaid +
-      totalPrepayments +
-      totalInterestPaid +
-      totalTaxesInsuranceMaintenance,
+        loan.processingFees +
+        upfrontCostsAmount +
+        totalPrincipalPaid +
+        totalPrepayments +
+        totalInterestPaid +
+        totalTaxesInsuranceMaintenance,
+    ),
   };
 
   const amortizationYears = aggregateYears(schedule);
@@ -233,17 +235,18 @@ export function calculateEMI(inputs: CalculatorInputs): CalculatorResult {
     downPaymentAmount,
     upfrontCostsAmount,
     monthlyBreakdown: {
-      baseEmi,
-      extraMonthlyPayment: monthlyExtraPayment,
-      propertyTax: monthlyPropertyTax,
-      homeInsurance: monthlyHomeInsurance,
-      maintenance: monthlyMaintenance,
-      totalMonthlyOutgo:
+      baseEmi: roundAmount(baseEmi),
+      extraMonthlyPayment: roundAmount(monthlyExtraPayment),
+      propertyTax: roundAmount(monthlyPropertyTax),
+      homeInsurance: roundAmount(monthlyHomeInsurance),
+      maintenance: roundAmount(monthlyMaintenance),
+      totalMonthlyOutgo: roundAmount(
         baseEmi +
-        monthlyExtraPayment +
-        monthlyPropertyTax +
-        monthlyHomeInsurance +
-        monthlyMaintenance,
+          monthlyExtraPayment +
+          monthlyPropertyTax +
+          monthlyHomeInsurance +
+          monthlyMaintenance,
+      ),
     },
     paymentBreakdown,
     amortizationYears,

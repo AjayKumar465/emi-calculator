@@ -1,22 +1,32 @@
 import { MONTH_LABELS } from './constants';
 import { MonthYear } from '../types/calculator';
 
-export function formatCurrency(value: number, compact = false): string {
+export const MONEY_DECIMALS = 2;
+export const PERCENT_DECIMALS = 2;
+
+export function roundAmount(value: number, fractionDigits = MONEY_DECIMALS): number {
   const safeValue = Number.isFinite(value) ? value : 0;
+  const factor = 10 ** fractionDigits;
+  return Math.round(safeValue * factor) / factor;
+}
+
+export function formatCurrency(value: number, compact = false): string {
+  const safeValue = roundAmount(value);
 
   if (compact && Math.abs(safeValue) >= 100000) {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       notation: 'compact',
-      maximumFractionDigits: 2,
+      maximumFractionDigits: MONEY_DECIMALS,
     }).format(safeValue);
   }
 
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    maximumFractionDigits: 0,
+    minimumFractionDigits: MONEY_DECIMALS,
+    maximumFractionDigits: MONEY_DECIMALS,
   }).format(safeValue);
 }
 
@@ -52,8 +62,8 @@ export function sanitizeNumericText(text: string, allowDecimal = true): string {
   return `${whole}.${fractionParts.join('')}`;
 }
 
-export function formatPercent(value: number, fractionDigits = 2): string {
-  return `${formatNumber(value, fractionDigits)}%`;
+export function formatPercent(value: number, fractionDigits = PERCENT_DECIMALS): string {
+  return `${formatNumber(roundAmount(value, fractionDigits), fractionDigits)}%`;
 }
 
 export function parseNumericInput(value: string): number {

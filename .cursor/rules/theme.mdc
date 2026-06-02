@@ -1,0 +1,64 @@
+---
+description: Glossy dark glassmorphism theme for EMI Calculator
+globs: **/*.{tsx,ts,jsx,js}
+alwaysApply: true
+---
+
+# EMI Calculator Theme — Glossy Dark
+
+## Color Palette
+
+| Role | Token | Value |
+|---|---|---|
+| Page background | `pageBackground` | `#0a1628` |
+| Gradient start | `gradientStart` | `#0d2844` |
+| Gradient end | `gradientEnd` | `#0a1628` |
+| Glass card | `cardBackground` | `rgba(255,255,255,0.06)` |
+| Glass elevated | `cardBackgroundElevated` | `rgba(255,255,255,0.09)` |
+| Primary action | `tealAccent` | `#2ec4b6` |
+| Teal glow | `tealGlow` | `rgba(46,196,182,0.45)` |
+| Text primary | `textPrimary` | `#FFFFFF` |
+| Text secondary | `textSecondary` | `rgba(255,255,255,0.72)` |
+| Text muted | `textMuted` | `rgba(255,255,255,0.45)` |
+| Border | `border` | `rgba(255,255,255,0.1)` |
+| Input bg | `inputBackground` | `rgba(255,255,255,0.05)` |
+| Destructive | `destructive` | `#ff6b6b` |
+| Success dot | `success` | `#4ade80` |
+
+## Typography
+
+| Role | Font |
+|---|---|
+| Headings | DM Sans Bold |
+| Body / UI | DM Sans |
+| Numbers | JetBrains Mono |
+
+## Visual Character
+
+- **Dark gradient background** with subtle grid overlay and left-side teal glow orb
+- **Glassmorphism cards** — semi-transparent, blur on native, inset highlight border
+- **Teal is the only action color** — buttons, progress bars, highlights use `#2ec4b6`
+- **Soft glow shadows** on primary CTAs and hero result cards
+- **Depth through blur + glow**, not flat borders
+- **Destructive actions** use red `#ff6b6b`, never teal
+
+## Component Standards
+
+- Cards: `borderRadius: 20`, glass bg, `BlurView` on native, `1px rgba(255,255,255,0.1)` border
+- Header: transparent over gradient, badge pill with status dot, title with teal highlight span
+- Buttons: solid teal primary with dark text; ghost with transparent bg + border; destructive red outline
+- Inputs: recessed dark glass fields, teal selection color, mono for values
+- Progress bars: teal fill on dark recessed track
+- Charts: bright accent colors tuned for dark backgrounds
+
+## Animation
+
+- Spring bounce: `cubic-bezier(0.34, 1.56, 0.64, 1)`
+- Slide: `cubic-bezier(0.16, 1, 0.3, 1)`
+- Use `react-native-reanimated` for card entry and value transitions
+
+## Code Standards
+
+- No calculation logic in components — use hooks and pure utils
+- Precompute chart/table data in hooks
+- Use TypeScript strict mode throughout

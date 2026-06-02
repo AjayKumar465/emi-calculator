@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import { CreditCardInputsCard } from '@/src/components/credit-card/CreditCardInputsCard';
 import { CreditCardPaymentChart } from '@/src/components/credit-card/CreditCardPaymentChart';
@@ -8,14 +9,13 @@ import { PaymentBreakdownChart } from '@/src/components/calculator/PaymentBreakd
 import { LoanResultSummary } from '@/src/components/loan/LoanResultSummary';
 import { AppHeader } from '@/src/components/ui/AppHeader';
 import { CalculatorHubNav } from '@/src/components/ui/CalculatorHubNav';
+import { CalculatorScrollView } from '@/src/components/ui/CalculatorScrollView';
 import { ExportActions } from '@/src/components/ui/ExportActions';
 import { GlossyBackground } from '@/src/components/ui/GlossyBackground';
 import { useCreditCardCalculator } from '@/src/hooks/useCreditCardCalculator';
 import { spacing, colors, fonts, fontSizes } from '@/src/theme';
 import { buildCreditCardExportPayload } from '@/src/utils/export/buildExportPayloads';
 import { createResponsiveStyles, media } from '@/src/theme/responsive';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { StatusBar } from 'expo-status-bar';
 
 export default function CreditCardCalculatorScreen() {
   const {
@@ -36,53 +36,10 @@ export default function CreditCardCalculatorScreen() {
     [inputs, result, formattedSummary],
   );
 
-  const inputColumn = (
-    <>
-      <Animated.View entering={FadeInDown.springify().damping(16)} style={styles.section}>
-        <CreditCardInputsCard inputs={inputs} onChange={updateInputs} />
-      </Animated.View>
-    </>
-  );
-
-  const resultsColumn = (
-    <>
-      <Animated.View entering={FadeInDown.delay(80).springify().damping(16)} style={styles.section}>
-        <LoanResultSummary
-          items={formattedSummary}
-          loanPaidPercent={loanPaidPercent}
-          modeLabel="Credit Card EMI with GST"
-        />
-        <Text style={footnoteStyles.text}>† APR calculation excludes GST</Text>
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(120).springify().damping(16)} style={styles.section}>
-        <PaymentBreakdownChart
-          segments={result.donutSegments}
-          lifetimeCostLabel={formattedLifetimeCost}
-          title="Total of all Payments"
-          subtitle="Principal, fees, interest, and GST"
-          centerTitle="Total of"
-          centerSubtitle="Payments"
-        />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(160).springify().damping(16)} style={styles.section}>
-        <CreditCardPaymentChart data={result.chartData} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(200).springify().damping(16)} style={styles.section}>
-        <AmortizationTable years={result.amortizationYears} thirdColumnLabel="GST on Interest (C)" />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(240).springify().damping(16)} style={styles.section}>
-        <ExportActions payload={exportPayload} />
-      </Animated.View>
-    </>
-  );
-
   return (
     <GlossyBackground>
       <StatusBar style="light" />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <CalculatorScrollView contentContainerStyle={styles.scrollContent}>
         <AppHeader
           title="Credit Card"
           titleHighlight="EMI with GST"
@@ -90,10 +47,45 @@ export default function CreditCardCalculatorScreen() {
         />
         <CalculatorHubNav active="credit-card" />
         <View style={styles.layoutGrid}>
-          <View style={styles.column}>{inputColumn}</View>
-          <View style={styles.column}>{resultsColumn}</View>
+          <View style={styles.column}>
+            <View style={styles.section}>
+              <CreditCardInputsCard inputs={inputs} onChange={updateInputs} />
+            </View>
+          </View>
+          <View style={styles.column}>
+            <View style={styles.section}>
+              <LoanResultSummary
+                items={formattedSummary}
+                loanPaidPercent={loanPaidPercent}
+                modeLabel="Credit Card EMI with GST"
+              />
+              <Text style={footnoteStyles.text}>† APR calculation excludes GST</Text>
+            </View>
+            <View style={styles.section}>
+              <PaymentBreakdownChart
+                segments={result.donutSegments}
+                lifetimeCostLabel={formattedLifetimeCost}
+                title="Total of all Payments"
+                subtitle="Principal, fees, interest, and GST"
+                centerTitle="Total of"
+                centerSubtitle="Payments"
+              />
+            </View>
+            <View style={styles.section}>
+              <CreditCardPaymentChart data={result.chartData} />
+            </View>
+            <View style={styles.section}>
+              <AmortizationTable
+                years={result.amortizationYears}
+                thirdColumnLabel="GST on Interest (C)"
+              />
+            </View>
+            <View style={styles.section}>
+              <ExportActions payload={exportPayload} />
+            </View>
+          </View>
         </View>
-      </ScrollView>
+      </CalculatorScrollView>
     </GlossyBackground>
   );
 }

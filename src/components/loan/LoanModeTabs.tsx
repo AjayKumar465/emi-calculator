@@ -1,7 +1,8 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LoanCalculatorMode } from '../../types/loanCalculator';
 import { LOAN_MODE_TABS } from '../../utils/loanCalculator';
+import { HorizontalScrollArea } from '../ui/HorizontalScrollArea';
 import { colors, fonts, fontSizes, radii, spacing } from '../../theme';
 
 interface LoanModeTabsProps {
@@ -11,7 +12,7 @@ interface LoanModeTabsProps {
 
 export function LoanModeTabs({ mode, onChange }: LoanModeTabsProps) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
+    <HorizontalScrollArea style={styles.scroll}>
       <View style={styles.row}>
         {LOAN_MODE_TABS.map((tab) => {
           const active = tab.key === mode;
@@ -31,7 +32,7 @@ export function LoanModeTabs({ mode, onChange }: LoanModeTabsProps) {
           );
         })}
       </View>
-    </ScrollView>
+    </HorizontalScrollArea>
   );
 }
 

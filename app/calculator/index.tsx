@@ -1,7 +1,6 @@
-import { ScrollView, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { StatusBar } from 'expo-status-bar';
 import { useMemo } from 'react';
+import { View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import { AmortizationChart } from '@/src/components/calculator/AmortizationChart';
 import { AmortizationTable } from '@/src/components/calculator/AmortizationTable';
@@ -12,6 +11,7 @@ import { PaymentBreakdownChart } from '@/src/components/calculator/PaymentBreakd
 import { PrepaymentCard } from '@/src/components/calculator/PrepaymentCard';
 import { AppHeader } from '@/src/components/ui/AppHeader';
 import { CalculatorHubNav } from '@/src/components/ui/CalculatorHubNav';
+import { CalculatorScrollView } from '@/src/components/ui/CalculatorScrollView';
 import { ExportActions } from '@/src/components/ui/ExportActions';
 import { GlossyBackground } from '@/src/components/ui/GlossyBackground';
 import { useEMICalculator } from '@/src/hooks/useEMICalculator';
@@ -40,61 +40,10 @@ export default function CalculatorScreen() {
     [inputs, result, summaryLineItems, donutSegments],
   );
 
-  const inputColumn = (
-    <>
-      <Animated.View entering={FadeInDown.springify().damping(16)} style={styles.section}>
-        <LoanDetailsCard
-          loan={inputs.loan}
-          netLoanAmount={result.netLoanAmount}
-          onChange={(loan) => updateInputs((current) => ({ ...current, loan }))}
-        />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(80).springify().damping(16)} style={styles.section}>
-        <HomeownerExpensesCard
-          expenses={inputs.expenses}
-          onChange={(expenses) => updateInputs((current) => ({ ...current, expenses }))}
-        />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(120).springify().damping(16)} style={styles.section}>
-        <PrepaymentCard
-          prepayments={inputs.prepayments}
-          onChange={(prepayments) => updateInputs((current) => ({ ...current, prepayments }))}
-          onRemove={resetPrepayments}
-        />
-      </Animated.View>
-    </>
-  );
-
-  const resultsColumn = (
-    <>
-      <Animated.View entering={FadeInDown.delay(160).springify().damping(16)} style={styles.section}>
-        <EMISummaryCard items={summaryLineItems} loanPaidPercent={loanPaidPercent} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(200).springify().damping(16)} style={styles.section}>
-        <PaymentBreakdownChart
-          segments={donutSegments}
-          lifetimeCostLabel={formattedLifetimeCost}
-        />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(240).springify().damping(16)} style={styles.section}>
-        <AmortizationChart data={result.chartData} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(280).springify().damping(16)} style={styles.section}>
-        <AmortizationTable years={result.amortizationYears} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(320).springify().damping(16)} style={styles.section}>
-        <ExportActions payload={exportPayload} />
-      </Animated.View>
-    </>
-  );
-
   return (
     <GlossyBackground>
       <StatusBar style="light" />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <CalculatorScrollView contentContainerStyle={styles.scrollContent}>
         <AppHeader
           title="Home Loan"
           titleHighlight="EMI Calculator"
@@ -102,10 +51,50 @@ export default function CalculatorScreen() {
         />
         <CalculatorHubNav active="home-loan" />
         <View style={styles.layoutGrid}>
-          <View style={styles.column}>{inputColumn}</View>
-          <View style={styles.column}>{resultsColumn}</View>
+          <View style={styles.column}>
+            <View style={styles.section}>
+              <LoanDetailsCard
+                loan={inputs.loan}
+                netLoanAmount={result.netLoanAmount}
+                onChange={(loan) => updateInputs((current) => ({ ...current, loan }))}
+              />
+            </View>
+            <View style={styles.section}>
+              <HomeownerExpensesCard
+                expenses={inputs.expenses}
+                onChange={(expenses) => updateInputs((current) => ({ ...current, expenses }))}
+              />
+            </View>
+            <View style={styles.section}>
+              <PrepaymentCard
+                prepayments={inputs.prepayments}
+                onChange={(prepayments) => updateInputs((current) => ({ ...current, prepayments }))}
+                onRemove={resetPrepayments}
+              />
+            </View>
+          </View>
+          <View style={styles.column}>
+            <View style={styles.section}>
+              <EMISummaryCard items={summaryLineItems} loanPaidPercent={loanPaidPercent} />
+            </View>
+            <View style={styles.section}>
+              <PaymentBreakdownChart
+                segments={donutSegments}
+                lifetimeCostLabel={formattedLifetimeCost}
+              />
+            </View>
+            <View style={styles.section}>
+              <AmortizationChart data={result.chartData} />
+            </View>
+            <View style={styles.section}>
+              <AmortizationTable years={result.amortizationYears} />
+            </View>
+            <View style={styles.section}>
+              <ExportActions payload={exportPayload} />
+            </View>
+          </View>
         </View>
-      </ScrollView>
+      </CalculatorScrollView>
     </GlossyBackground>
   );
 }

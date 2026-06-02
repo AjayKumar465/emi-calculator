@@ -1,6 +1,7 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Link, Href } from 'expo-router';
 
+import { HorizontalScrollArea } from './HorizontalScrollArea';
 import { colors, fonts, fontSizes, radii, spacing } from '../../theme';
 
 interface CalculatorHubNavProps {
@@ -15,7 +16,7 @@ const TABS: { key: CalculatorHubNavProps['active']; href: Href; label: string }[
 
 export function CalculatorHubNav({ active }: CalculatorHubNavProps) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
+    <HorizontalScrollArea style={styles.scroll}>
       <View style={styles.row}>
         {TABS.map((tab) => {
           const isActive = active === tab.key;
@@ -28,7 +29,7 @@ export function CalculatorHubNav({ active }: CalculatorHubNavProps) {
           );
         })}
       </View>
-    </ScrollView>
+    </HorizontalScrollArea>
   );
 }
 

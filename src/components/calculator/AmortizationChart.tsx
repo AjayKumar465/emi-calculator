@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { memo, useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import Svg, { G, Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 
 import { ChartYearData } from '../../types/calculator';
 import { formatCurrency } from '../../utils/format';
 import { colors, fonts, fontSizes, spacing } from '../../theme';
 import { Card } from '../ui/Card';
+import { HorizontalScrollArea } from '../ui/HorizontalScrollArea';
 import { SectionHeader } from '../ui/SectionHeader';
 
 interface AmortizationChartProps {
@@ -27,7 +28,7 @@ const STACK_KEYS = [
   },
 ];
 
-export function AmortizationChart({ data }: AmortizationChartProps) {
+export const AmortizationChart = memo(function AmortizationChart({ data }: AmortizationChartProps) {
   const chartModel = useMemo(() => {
     if (data.length === 0) {
       return null;
@@ -83,7 +84,7 @@ export function AmortizationChart({ data }: AmortizationChartProps) {
         title="Payment Schedule"
         subtitle="Yearly composition with declining balance"
       />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <HorizontalScrollArea>
         <Svg width={CHART_WIDTH} height={CHART_HEIGHT}>
           <Line
             x1={PADDING.left}
@@ -126,7 +127,7 @@ export function AmortizationChart({ data }: AmortizationChartProps) {
             strokeWidth={2}
           />
         </Svg>
-      </ScrollView>
+      </HorizontalScrollArea>
       <View style={styles.legend}>
         {STACK_KEYS.map((item) => (
           <View key={item.key} style={styles.legendItem}>
@@ -145,7 +146,7 @@ export function AmortizationChart({ data }: AmortizationChartProps) {
       </Text>
     </Card>
   );
-}
+});
 
 const styles = StyleSheet.create({
   legend: {

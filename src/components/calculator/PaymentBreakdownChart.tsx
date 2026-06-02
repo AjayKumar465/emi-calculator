@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 
@@ -24,7 +24,7 @@ const RADIUS = (CHART_SIZE - STROKE_WIDTH) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 const CHART_CENTER = CHART_SIZE / 2;
 
-export function PaymentBreakdownChart({
+export const PaymentBreakdownChart = memo(function PaymentBreakdownChart({
   segments,
   lifetimeCostLabel,
   title = 'Lifetime Cost',
@@ -103,7 +103,7 @@ export function PaymentBreakdownChart({
       <AnimatedValue style={styles.total} value={lifetimeCostLabel} />
     </Card>
   );
-}
+});
 
 const styles = StyleSheet.create({
   chartRow: {

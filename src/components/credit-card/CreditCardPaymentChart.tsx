@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { memo, useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import Svg, { G, Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 
 import { CreditCardChartPoint } from '../../types/creditCardCalculator';
 import { formatCurrency } from '../../utils/format';
 import { colors, fonts, fontSizes, spacing } from '../../theme';
 import { Card } from '../ui/Card';
+import { HorizontalScrollArea } from '../ui/HorizontalScrollArea';
 import { SectionHeader } from '../ui/SectionHeader';
 
 interface CreditCardPaymentChartProps {
@@ -22,7 +23,9 @@ const STACK_KEYS = [
   { key: 'gstOnInterest' as const, color: colors.chart.taxesInsurance, label: 'GST on Interest' },
 ];
 
-export function CreditCardPaymentChart({ data }: CreditCardPaymentChartProps) {
+export const CreditCardPaymentChart = memo(function CreditCardPaymentChart({
+  data,
+}: CreditCardPaymentChartProps) {
   const chartModel = useMemo(() => {
     if (data.length === 0) {
       return null;
@@ -74,7 +77,7 @@ export function CreditCardPaymentChart({ data }: CreditCardPaymentChartProps) {
         title="Repayment Chart"
         subtitle="Monthly principal, interest, GST, and declining balance"
       />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <HorizontalScrollArea>
         <Svg width={CHART_WIDTH} height={CHART_HEIGHT}>
           <Line
             x1={PADDING.left}
@@ -117,7 +120,7 @@ export function CreditCardPaymentChart({ data }: CreditCardPaymentChartProps) {
             strokeWidth={2}
           />
         </Svg>
-      </ScrollView>
+      </HorizontalScrollArea>
       <View style={styles.legend}>
         {STACK_KEYS.map((item) => (
           <View key={item.key} style={styles.legendItem}>
@@ -136,7 +139,7 @@ export function CreditCardPaymentChart({ data }: CreditCardPaymentChartProps) {
       </Text>
     </Card>
   );
-}
+});
 
 const styles = StyleSheet.create({
   legend: {

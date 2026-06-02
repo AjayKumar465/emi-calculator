@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import { ScrollView, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import { AmortizationChart } from '@/src/components/calculator/AmortizationChart';
@@ -11,6 +10,7 @@ import { LoanModeTabs } from '@/src/components/loan/LoanModeTabs';
 import { LoanResultSummary } from '@/src/components/loan/LoanResultSummary';
 import { AppHeader } from '@/src/components/ui/AppHeader';
 import { CalculatorHubNav } from '@/src/components/ui/CalculatorHubNav';
+import { CalculatorScrollView } from '@/src/components/ui/CalculatorScrollView';
 import { ExportActions } from '@/src/components/ui/ExportActions';
 import { GlossyBackground } from '@/src/components/ui/GlossyBackground';
 import { useLoanCalculator } from '@/src/hooks/useLoanCalculator';
@@ -42,51 +42,10 @@ export default function LoanCalculatorScreen() {
     [inputs, result, formattedSummary],
   );
 
-  const inputColumn = (
-    <>
-      <Animated.View entering={FadeInDown.springify().damping(16)} style={styles.section}>
-        <LoanModeTabs mode={inputs.mode} onChange={setMode} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(80).springify().damping(16)} style={styles.section}>
-        <LoanCalculatorInputsCard inputs={inputs} onChange={updateInputs} />
-      </Animated.View>
-    </>
-  );
-
-  const resultsColumn = (
-    <>
-      <Animated.View entering={FadeInDown.delay(120).springify().damping(16)} style={styles.section}>
-        <LoanResultSummary
-          items={formattedSummary}
-          loanPaidPercent={loanPaidPercent}
-          modeLabel={modeLabel}
-        />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(160).springify().damping(16)} style={styles.section}>
-        <PaymentBreakdownChart
-          segments={result.donutSegments}
-          lifetimeCostLabel={formattedLifetimeCost}
-        />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(200).springify().damping(16)} style={styles.section}>
-        <AmortizationChart data={result.chartData} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(240).springify().damping(16)} style={styles.section}>
-        <AmortizationTable years={result.amortizationYears} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(280).springify().damping(16)} style={styles.section}>
-        <ExportActions payload={exportPayload} />
-      </Animated.View>
-    </>
-  );
-
   return (
     <GlossyBackground>
       <StatusBar style="light" />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <CalculatorScrollView contentContainerStyle={styles.scrollContent}>
         <AppHeader
           title="Loan"
           titleHighlight="Suite"
@@ -94,10 +53,40 @@ export default function LoanCalculatorScreen() {
         />
         <CalculatorHubNav active="loan-suite" />
         <View style={styles.layoutGrid}>
-          <View style={styles.column}>{inputColumn}</View>
-          <View style={styles.column}>{resultsColumn}</View>
+          <View style={styles.column}>
+            <View style={styles.section}>
+              <LoanModeTabs mode={inputs.mode} onChange={setMode} />
+            </View>
+            <View style={styles.section}>
+              <LoanCalculatorInputsCard inputs={inputs} onChange={updateInputs} />
+            </View>
+          </View>
+          <View style={styles.column}>
+            <View style={styles.section}>
+              <LoanResultSummary
+                items={formattedSummary}
+                loanPaidPercent={loanPaidPercent}
+                modeLabel={modeLabel}
+              />
+            </View>
+            <View style={styles.section}>
+              <PaymentBreakdownChart
+                segments={result.donutSegments}
+                lifetimeCostLabel={formattedLifetimeCost}
+              />
+            </View>
+            <View style={styles.section}>
+              <AmortizationChart data={result.chartData} />
+            </View>
+            <View style={styles.section}>
+              <AmortizationTable years={result.amortizationYears} />
+            </View>
+            <View style={styles.section}>
+              <ExportActions payload={exportPayload} />
+            </View>
+          </View>
         </View>
-      </ScrollView>
+      </CalculatorScrollView>
     </GlossyBackground>
   );
 }

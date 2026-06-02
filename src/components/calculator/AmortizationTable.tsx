@@ -1,10 +1,11 @@
-import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { memo, useCallback, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AmortizationYear } from '../../types/calculator';
 import { formatCurrency, formatPercent } from '../../utils/format';
 import { colors, fonts, fontSizes, spacing } from '../../theme';
 import { Card } from '../ui/Card';
+import { HorizontalScrollArea } from '../ui/HorizontalScrollArea';
 import { SectionHeader } from '../ui/SectionHeader';
 
 interface AmortizationTableProps {
@@ -14,7 +15,7 @@ interface AmortizationTableProps {
 
 const DEFAULT_THIRD_COLUMN = 'Taxes/Ins/Maint';
 
-export function AmortizationTable({
+export const AmortizationTable = memo(function AmortizationTable({
   years,
   thirdColumnLabel = DEFAULT_THIRD_COLUMN,
 }: AmortizationTableProps) {
@@ -45,7 +46,7 @@ export function AmortizationTable({
         title="Amortization Table"
         subtitle="Tap a year to reveal monthly detail"
       />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <HorizontalScrollArea>
         <View style={styles.table}>
           <View style={styles.headerRow}>
             {headerColumns.map((column) => (
@@ -124,10 +125,10 @@ export function AmortizationTable({
             );
           })}
         </View>
-      </ScrollView>
+      </HorizontalScrollArea>
     </Card>
   );
-}
+});
 
 const styles = StyleSheet.create({
   table: {

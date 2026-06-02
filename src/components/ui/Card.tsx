@@ -26,11 +26,7 @@ export function Card({ children, elevated = true, glow = false, style, ...rest }
   );
 
   if (Platform.OS === 'web') {
-    return (
-      <View style={[styles.wrapper, styles.webGlass]}>
-        {content}
-      </View>
-    );
+    return <View style={[styles.wrapper, styles.webCard]}>{content}</View>;
   }
 
   return (
@@ -65,8 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cardBackgroundElevated,
     borderColor: colors.glassHighlight,
   },
-  webGlass: {
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
+  webCard: {
+    contain: 'layout paint',
   } as ViewStyle,
 });

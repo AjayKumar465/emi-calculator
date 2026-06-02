@@ -4,6 +4,7 @@ import { LoanCalculatorInputs, LoanCalculatorMode } from '../types/loanCalculato
 import { calculateLoanCalculator } from '../utils/loanCalculator';
 import { DEFAULT_LOAN_CALCULATOR_INPUTS } from '../utils/loanCalculatorConstants';
 import { formatCurrency, formatNumber, formatPercent } from '../utils/format';
+import { formatInflationSummaryRows, getInflationSummaryRows } from '../utils/inflation';
 
 export function useLoanCalculator(
   initialInputs: LoanCalculatorInputs = DEFAULT_LOAN_CALCULATOR_INPUTS,
@@ -49,11 +50,17 @@ export function useLoanCalculator(
     [result.totalPayment],
   );
 
+  const formattedInflationSummary = useMemo(
+    () => formatInflationSummaryRows(getInflationSummaryRows(result.inflation)),
+    [result.inflation],
+  );
+
   return {
     inputs,
     result,
     formattedSummary,
     formattedLifetimeCost,
+    formattedInflationSummary,
     updateInputs,
     setMode,
   };

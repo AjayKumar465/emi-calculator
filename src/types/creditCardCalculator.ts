@@ -1,4 +1,5 @@
 import { AmortizationYear, DonutSegment, MonthYear, SummaryLineItem } from './calculator';
+import { InflationImpact } from './inflation';
 
 export interface CreditCardCalculatorInputs {
   transactionAmount: number;
@@ -7,6 +8,7 @@ export interface CreditCardCalculatorInputs {
   processingFeePreGst: number;
   gstRate: number;
   startDate: MonthYear;
+  annualInflationRate: number;
 }
 
 export interface CreditCardChartPoint {
@@ -30,4 +32,5 @@ export interface CreditCardCalculatorResult {
   chartData: CreditCardChartPoint[];
   donutSegments: DonutSegment[];
   summaryItems: SummaryLineItem[];
+  inflation: InflationImpact;
 }

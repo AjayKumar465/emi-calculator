@@ -11,6 +11,7 @@ import {
   ValueMode,
 } from '../types/calculator';
 import { addMonths, monthYearToIndex, roundAmount } from './format';
+import { calculateHomeLoanInflationImpact } from './inflation';
 
 function resolveModeValue(
   base: number,
@@ -229,6 +230,19 @@ export function calculateEMI(inputs: CalculatorInputs): CalculatorResult {
   };
 
   const amortizationYears = aggregateYears(schedule);
+  const tenureYears =
+    loan.tenureMode === 'years' ? loan.tenure : loan.tenure / 12;
+  const inflation = calculateHomeLoanInflationImpact({
+    annualInflationRate: inputs.annualInflationRate,
+    annualPropertyAppreciationRate: inputs.annualPropertyAppreciationRate,
+    monthlyPayments: schedule,
+    upfrontOutflow: roundAmount(
+      downPaymentAmount + loan.processingFees + upfrontCostsAmount,
+    ),
+    netLoanAmount,
+    propertyValue: loan.propertyValue,
+    tenureYears,
+  });
 
   return {
     netLoanAmount,
@@ -251,6 +265,7 @@ export function calculateEMI(inputs: CalculatorInputs): CalculatorResult {
     paymentBreakdown,
     amortizationYears,
     chartData: toChartData(amortizationYears),
+    inflation,
   };
 }
 

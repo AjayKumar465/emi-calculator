@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { CreditCardInputsCard } from '@/src/components/credit-card/CreditCardInputsCard';
 import { CreditCardPaymentChart } from '@/src/components/credit-card/CreditCardPaymentChart';
+import { InflationInsightCard } from '@/src/components/calculator/InflationInsightCard';
 import { AmortizationTable } from '@/src/components/calculator/AmortizationTable';
 import { PaymentBreakdownChart } from '@/src/components/calculator/PaymentBreakdownChart';
 import { LoanResultSummary } from '@/src/components/loan/LoanResultSummary';
@@ -23,6 +24,7 @@ export default function CreditCardCalculatorScreen() {
     result,
     formattedSummary,
     formattedLifetimeCost,
+    formattedInflationSummary,
     updateInputs,
   } = useCreditCardCalculator();
 
@@ -69,6 +71,12 @@ export default function CreditCardCalculatorScreen() {
                 subtitle="Principal, fees, interest, and GST"
                 centerTitle="Total of"
                 centerSubtitle="Payments"
+              />
+            </View>
+            <View style={styles.section}>
+              <InflationInsightCard
+                items={formattedInflationSummary}
+                annualInflationRate={inputs.annualInflationRate}
               />
             </View>
             <View style={styles.section}>

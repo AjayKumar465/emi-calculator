@@ -9,6 +9,10 @@ import {
 import { DEFAULT_CALCULATOR_INPUTS } from '../utils/constants';
 import { calculateEMI, getDonutSegments } from '../utils/emi';
 import { formatCurrency } from '../utils/format';
+import {
+  formatInflationSummaryRows,
+  getHomeLoanInflationSummaryRows,
+} from '../utils/inflation';
 
 export function useEMICalculator(initialInputs: CalculatorInputs = DEFAULT_CALCULATOR_INPUTS) {
   const [inputs, setInputs] = useState<CalculatorInputs>(initialInputs);
@@ -62,6 +66,11 @@ export function useEMICalculator(initialInputs: CalculatorInputs = DEFAULT_CALCU
     [result.paymentBreakdown.lifetimeCost],
   );
 
+  const formattedInflationSummary = useMemo(
+    () => formatInflationSummaryRows(getHomeLoanInflationSummaryRows(result.inflation)),
+    [result.inflation],
+  );
+
   const updateInputs = useCallback((updater: (current: CalculatorInputs) => CalculatorInputs) => {
     setInputs((current) => updater(current));
   }, []);
@@ -79,6 +88,7 @@ export function useEMICalculator(initialInputs: CalculatorInputs = DEFAULT_CALCU
     donutSegments,
     summaryLineItems,
     formattedLifetimeCost,
+    formattedInflationSummary,
     updateInputs,
     resetPrepayments,
   };

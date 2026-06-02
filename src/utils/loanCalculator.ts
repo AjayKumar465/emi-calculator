@@ -16,6 +16,7 @@ import {
   ResolvedLoanParameters,
 } from '../types/loanCalculator';
 import { addMonths, roundAmount } from './format';
+import { calculateInflationImpact } from './inflation';
 
 function getTenureMonths(tenure: number, mode: TenureMode): number {
   return mode === 'years' ? Math.round(tenure * 12) : Math.round(tenure);
@@ -362,7 +363,7 @@ function buildSummaryItems(
   if (mode === 'tenure') {
     items.unshift({
       key: 'tenureMonths',
-      label: 'Repayment Period',
+      label: 'Home Loan Tenure',
       value: actualMonths,
       emphasized: true,
     });
@@ -417,6 +418,12 @@ export function calculateLoanCalculator(inputs: LoanCalculatorInputs): LoanCalcu
   );
 
   const amortizationYears = aggregateYears(schedule);
+  const inflation = calculateInflationImpact({
+    annualInflationRate: inputs.annualInflationRate,
+    monthlyPayments: schedule,
+    upfrontOutflow: inputs.processingFees,
+    principalReference: resolved.principal,
+  });
   const donutSegments = (
     [
       {
@@ -456,6 +463,7 @@ export function calculateLoanCalculator(inputs: LoanCalculatorInputs): LoanCalcu
       totalPayment,
       actualMonths,
     ),
+    inflation,
   };
 }
 

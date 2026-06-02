@@ -64,6 +64,16 @@ export function CreditCardInputsCard({ inputs, onChange }: CreditCardInputsCardP
           onChange={(startDate) => onChange({ startDate })}
         />
       </FormRow>
+      <FormRow>
+        <NumericInputField
+          fractionDigits={2}
+          helperText="Used to estimate real cost of future payments in today's money."
+          label="Annual Inflation Rate"
+          suffix="%"
+          value={inputs.annualInflationRate}
+          onChangeValue={(annualInflationRate) => onChange({ annualInflationRate })}
+        />
+      </FormRow>
     </Card>
   );
 }

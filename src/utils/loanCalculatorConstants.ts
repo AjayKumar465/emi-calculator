@@ -1,4 +1,5 @@
-import { DEFAULT_START_DATE } from '../utils/constants';
+import { DEFAULT_START_DATE } from './constants';
+import { DEFAULT_ANNUAL_INFLATION_RATE } from './inflationConstants';
 import { LoanCalculatorInputs } from '../types/loanCalculator';
 
 export const DEFAULT_LOAN_CALCULATOR_INPUTS: LoanCalculatorInputs = {
@@ -12,4 +13,5 @@ export const DEFAULT_LOAN_CALCULATOR_INPUTS: LoanCalculatorInputs = {
   emiScheme: 'arrears',
   startDate: DEFAULT_START_DATE,
   extraMonthlyPayment: 0,
+  annualInflationRate: DEFAULT_ANNUAL_INFLATION_RATE,
 };

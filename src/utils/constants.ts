@@ -1,4 +1,5 @@
 import { CalculatorInputs, MonthYear } from '../types/calculator';
+import { DEFAULT_ANNUAL_INFLATION_RATE, DEFAULT_ANNUAL_PROPERTY_APPRECIATION_RATE } from './inflationConstants';
 
 export const DEFAULT_START_DATE: MonthYear = {
   month: new Date().getMonth() + 1,
@@ -30,6 +31,8 @@ export const DEFAULT_CALCULATOR_INPUTS: CalculatorInputs = {
     quarterly: { amount: 0, startDate: DEFAULT_START_DATE },
     oneTime: { amount: 0, startDate: DEFAULT_START_DATE },
   },
+  annualInflationRate: DEFAULT_ANNUAL_INFLATION_RATE,
+  annualPropertyAppreciationRate: DEFAULT_ANNUAL_PROPERTY_APPRECIATION_RATE,
 };
 
 export const MONTH_LABELS = [

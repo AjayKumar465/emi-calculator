@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { AmortizationChart } from '@/src/components/calculator/AmortizationChart';
 import { AmortizationTable } from '@/src/components/calculator/AmortizationTable';
 import { EMISummaryCard } from '@/src/components/calculator/EMISummaryCard';
+import { InflationInsightCard } from '@/src/components/calculator/InflationInsightCard';
 import { HomeownerExpensesCard } from '@/src/components/calculator/HomeownerExpensesCard';
 import { LoanDetailsCard } from '@/src/components/calculator/LoanDetailsCard';
 import { PaymentBreakdownChart } from '@/src/components/calculator/PaymentBreakdownChart';
@@ -26,6 +27,7 @@ export default function CalculatorScreen() {
     donutSegments,
     summaryLineItems,
     formattedLifetimeCost,
+    formattedInflationSummary,
     updateInputs,
     resetPrepayments,
   } = useEMICalculator();
@@ -56,7 +58,15 @@ export default function CalculatorScreen() {
               <LoanDetailsCard
                 loan={inputs.loan}
                 netLoanAmount={result.netLoanAmount}
+                annualInflationRate={inputs.annualInflationRate}
+                annualPropertyAppreciationRate={inputs.annualPropertyAppreciationRate}
                 onChange={(loan) => updateInputs((current) => ({ ...current, loan }))}
+                onInflationRateChange={(annualInflationRate) =>
+                  updateInputs((current) => ({ ...current, annualInflationRate }))
+                }
+                onPropertyAppreciationRateChange={(annualPropertyAppreciationRate) =>
+                  updateInputs((current) => ({ ...current, annualPropertyAppreciationRate }))
+                }
               />
             </View>
             <View style={styles.section}>
@@ -81,6 +91,13 @@ export default function CalculatorScreen() {
               <PaymentBreakdownChart
                 segments={donutSegments}
                 lifetimeCostLabel={formattedLifetimeCost}
+              />
+            </View>
+            <View style={styles.section}>
+              <InflationInsightCard
+                items={formattedInflationSummary}
+                annualInflationRate={inputs.annualInflationRate}
+                showHomeLoanFields
               />
             </View>
             <View style={styles.section}>

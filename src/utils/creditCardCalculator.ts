@@ -12,6 +12,7 @@ import {
   CreditCardChartPoint,
 } from '../types/creditCardCalculator';
 import { addMonths, formatMonthYear, roundAmount } from './format';
+import { calculateInflationImpact } from './inflation';
 
 function monthlyRate(annualRate: number): number {
   return annualRate / 12 / 100;
@@ -207,6 +208,13 @@ export function calculateCreditCardCalculator(
     inputs.processingFeePreGst,
   );
 
+  const inflation = calculateInflationImpact({
+    annualInflationRate: inputs.annualInflationRate,
+    monthlyPayments: schedule,
+    upfrontOutflow: totalProcessingFees,
+    principalReference: principal,
+  });
+
   const donutSegments = (
     [
       {
@@ -248,5 +256,6 @@ export function calculateCreditCardCalculator(
     chartData: toChartData(schedule),
     donutSegments,
     summaryItems: buildSummaryItems(emi, apr, totalInterest, totalPayment),
+    inflation,
   };
 }

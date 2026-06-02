@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { AmortizationChart } from '@/src/components/calculator/AmortizationChart';
 import { AmortizationTable } from '@/src/components/calculator/AmortizationTable';
+import { InflationInsightCard } from '@/src/components/calculator/InflationInsightCard';
 import { PaymentBreakdownChart } from '@/src/components/calculator/PaymentBreakdownChart';
 import { LoanCalculatorInputsCard } from '@/src/components/loan/LoanCalculatorInputsCard';
 import { LoanModeTabs } from '@/src/components/loan/LoanModeTabs';
@@ -25,6 +26,7 @@ export default function LoanCalculatorScreen() {
     result,
     formattedSummary,
     formattedLifetimeCost,
+    formattedInflationSummary,
     updateInputs,
     setMode,
   } = useLoanCalculator();
@@ -73,6 +75,12 @@ export default function LoanCalculatorScreen() {
               <PaymentBreakdownChart
                 segments={result.donutSegments}
                 lifetimeCostLabel={formattedLifetimeCost}
+              />
+            </View>
+            <View style={styles.section}>
+              <InflationInsightCard
+                items={formattedInflationSummary}
+                annualInflationRate={inputs.annualInflationRate}
               />
             </View>
             <View style={styles.section}>

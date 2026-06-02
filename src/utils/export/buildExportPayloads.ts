@@ -3,6 +3,11 @@ import { CalculatorInputs, CalculatorResult, DonutSegment, SummaryLineItem } fro
 import { CreditCardCalculatorInputs, CreditCardCalculatorResult } from '../../types/creditCardCalculator';
 import { LoanCalculatorInputs, LoanCalculatorResult } from '../../types/loanCalculator';
 import { formatCurrency, formatMonthYear, formatPercent, roundAmount } from '../format';
+import {
+  formatInflationSummaryRows,
+  getHomeLoanInflationSummaryRows,
+  getInflationSummaryRows,
+} from '../inflation';
 import { LOAN_MODE_TABS } from '../loanCalculator';
 
 function toBreakdown(segments: DonutSegment[]) {
@@ -10,6 +15,16 @@ function toBreakdown(segments: DonutSegment[]) {
     label: segment.label,
     value: roundAmount(segment.value),
     color: segment.color,
+  }));
+}
+
+function toInflationExportRows(
+  rows: ReturnType<typeof formatInflationSummaryRows>,
+) {
+  return rows.map((row) => ({
+    label: row.label,
+    value: row.displayValue,
+    numericValue: roundAmount(row.value),
   }));
 }
 
@@ -68,6 +83,14 @@ export function buildHomeLoanExportPayload(
       value: formatCurrency(result.paymentBreakdown.lifetimeCost),
       numericValue: roundAmount(result.paymentBreakdown.lifetimeCost),
     },
+    {
+      label: 'Annual Inflation Rate',
+      value: formatPercent(inputs.annualInflationRate, 2),
+      numericValue: roundAmount(inputs.annualInflationRate),
+    },
+    ...toInflationExportRows(
+      formatInflationSummaryRows(getHomeLoanInflationSummaryRows(result.inflation)),
+    ),
   ];
 
   return {
@@ -103,6 +126,14 @@ export function buildLoanSuiteExportPayload(
       value: item.displayValue,
       numericValue: roundAmount(item.value),
     })),
+    {
+      label: 'Annual Inflation Rate',
+      value: formatPercent(inputs.annualInflationRate, 2),
+      numericValue: roundAmount(inputs.annualInflationRate),
+    },
+    ...toInflationExportRows(
+      formatInflationSummaryRows(getInflationSummaryRows(result.inflation)),
+    ),
   ];
 
   return {
@@ -161,6 +192,14 @@ export function buildCreditCardExportPayload(
       value: item.displayValue,
       numericValue: roundAmount(item.value),
     })),
+    {
+      label: 'Annual Inflation Rate',
+      value: formatPercent(inputs.annualInflationRate, 2),
+      numericValue: roundAmount(inputs.annualInflationRate),
+    },
+    ...toInflationExportRows(
+      formatInflationSummaryRows(getInflationSummaryRows(result.inflation)),
+    ),
   ];
 
   return {

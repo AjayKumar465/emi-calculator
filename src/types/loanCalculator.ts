@@ -1,4 +1,5 @@
 import { MonthYear, TenureMode } from './calculator';
+import { InflationImpact } from './inflation';
 
 export type LoanCalculatorMode = 'emi' | 'affordability' | 'tenure' | 'interest';
 
@@ -15,6 +16,7 @@ export interface LoanCalculatorInputs {
   emiScheme: EmiScheme;
   startDate: MonthYear;
   extraMonthlyPayment: number;
+  annualInflationRate: number;
 }
 
 export interface ResolvedLoanParameters {
@@ -33,6 +35,7 @@ export interface LoanCalculatorResult {
   chartData: import('./calculator').ChartYearData[];
   donutSegments: import('./calculator').DonutSegment[];
   summaryItems: import('./calculator').SummaryLineItem[];
+  inflation: InflationImpact;
 }
 
 export interface LoanModeTab {

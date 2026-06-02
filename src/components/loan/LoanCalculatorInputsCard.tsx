@@ -125,6 +125,16 @@ export function LoanCalculatorInputsCard({ inputs, onChange }: LoanCalculatorInp
           />
         </FormRow>
       ) : null}
+      <FormRow>
+        <NumericInputField
+          fractionDigits={2}
+          helperText="Used to estimate real cost of future payments in today's money."
+          label="Annual Inflation Rate"
+          suffix="%"
+          value={inputs.annualInflationRate}
+          onChangeValue={(annualInflationRate) => onChange({ annualInflationRate })}
+        />
+      </FormRow>
     </Card>
   );
 }

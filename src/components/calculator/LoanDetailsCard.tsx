@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
+import { spacing } from '../../theme';
 import { LoanDetails } from '../../types/calculator';
 import { Card } from '../ui/Card';
 import { DatePicker } from '../ui/DatePicker';
@@ -7,18 +8,25 @@ import { FormRow } from '../ui/FormRow';
 import { NumericInputField } from '../ui/NumericInputField';
 import { SectionHeader } from '../ui/SectionHeader';
 import { ToggleGroup } from '../ui/ToggleGroup';
-import { spacing } from '../../theme';
 
 interface LoanDetailsCardProps {
   loan: LoanDetails;
   netLoanAmount: number;
+  annualInflationRate: number;
+  annualPropertyAppreciationRate: number;
   onChange: (loan: LoanDetails) => void;
+  onInflationRateChange: (annualInflationRate: number) => void;
+  onPropertyAppreciationRateChange: (annualPropertyAppreciationRate: number) => void;
 }
 
 export function LoanDetailsCard({
   loan,
   netLoanAmount,
+  annualInflationRate,
+  annualPropertyAppreciationRate,
   onChange,
+  onInflationRateChange,
+  onPropertyAppreciationRateChange,
 }: LoanDetailsCardProps) {
   const update = (patch: Partial<LoanDetails>) => {
     onChange({ ...loan, ...patch });
@@ -82,7 +90,7 @@ export function LoanDetailsCard({
             allowDecimal={false}
             fractionDigits={0}
             keyboardType="numeric"
-            label="Repayment Period"
+            label="Home Loan Tenure"
             value={loan.tenure}
             onChangeValue={(tenure) => update({ tenure })}
           />
@@ -107,6 +115,24 @@ export function LoanDetailsCard({
           label="Loan Start Date"
           value={loan.startDate}
           onChange={(startDate) => update({ startDate })}
+        />
+      </FormRow>
+      <FormRow>
+        <NumericInputField
+          fractionDigits={2}
+          helperText="Used to estimate real cost of future payments in today's money."
+          label="Annual Inflation Rate"
+          suffix="%"
+          value={annualInflationRate}
+          onChangeValue={onInflationRateChange}
+        />
+        <NumericInputField
+          fractionDigits={2}
+          helperText="Expected annual increase in property value (% per year)."
+          label="Property Appreciation Rate"
+          suffix="% p.a."
+          value={annualPropertyAppreciationRate}
+          onChangeValue={onPropertyAppreciationRateChange}
         />
       </FormRow>
     </Card>

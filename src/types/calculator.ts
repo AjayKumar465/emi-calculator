@@ -1,3 +1,5 @@
+import { HomeLoanInflationImpact } from './inflation';
+
 export type ValueMode = 'amount' | 'percent';
 export type TenureMode = 'years' | 'months';
 
@@ -42,6 +44,8 @@ export interface CalculatorInputs {
   loan: LoanDetails;
   expenses: HomeownerExpenses;
   prepayments: Prepayments;
+  annualInflationRate: number;
+  annualPropertyAppreciationRate: number;
 }
 
 export interface MonthlyBreakdown {
@@ -104,6 +108,7 @@ export interface CalculatorResult {
   paymentBreakdown: PaymentBreakdown;
   amortizationYears: AmortizationYear[];
   chartData: ChartYearData[];
+  inflation: HomeLoanInflationImpact;
 }
 
 export interface DonutSegment {

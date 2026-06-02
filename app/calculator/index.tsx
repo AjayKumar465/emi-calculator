@@ -11,6 +11,7 @@ import { LoanDetailsCard } from '@/src/components/calculator/LoanDetailsCard';
 import { PaymentBreakdownChart } from '@/src/components/calculator/PaymentBreakdownChart';
 import { PrepaymentCard } from '@/src/components/calculator/PrepaymentCard';
 import { AppHeader } from '@/src/components/ui/AppHeader';
+import { CalculatorHeaderShell } from '@/src/components/ui/CalculatorHeaderShell';
 import { CalculatorHubNav } from '@/src/components/ui/CalculatorHubNav';
 import { CalculatorScrollView } from '@/src/components/ui/CalculatorScrollView';
 import { ExportActions } from '@/src/components/ui/ExportActions';
@@ -46,12 +47,15 @@ export default function CalculatorScreen() {
     <GlossyBackground>
       <StatusBar style="light" />
       <CalculatorScrollView contentContainerStyle={styles.scrollContent}>
-        <AppHeader
-          title="Home Loan"
-          titleHighlight="EMI Calculator"
-          subtitle="Plan repayments with clarity — model prepayments, taxes, and lifetime cost in one glossy view."
-        />
-        <CalculatorHubNav active="home-loan" />
+        <CalculatorHeaderShell>
+          <AppHeader
+            title="Home Loan"
+            titleHighlight="EMI Calculator"
+            subtitle="Plan repayments with clarity — model prepayments, taxes, and lifetime cost in one glossy view."
+          />
+          <CalculatorHubNav active="home-loan" />
+        </CalculatorHeaderShell>
+        <View style={styles.pageContent}>
         <View style={styles.layoutGrid}>
           <View style={styles.column}>
             <View style={styles.section}>
@@ -111,6 +115,7 @@ export default function CalculatorScreen() {
             </View>
           </View>
         </View>
+        </View>
       </CalculatorScrollView>
     </GlossyBackground>
   );
@@ -118,8 +123,10 @@ export default function CalculatorScreen() {
 
 const styles = createResponsiveStyles({
   scrollContent: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.section,
+  },
+  pageContent: {
+    paddingHorizontal: spacing.lg,
     [media.mobile]: {
       paddingHorizontal: spacing.md,
     },

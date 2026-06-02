@@ -9,6 +9,7 @@ import { AmortizationTable } from '@/src/components/calculator/AmortizationTable
 import { PaymentBreakdownChart } from '@/src/components/calculator/PaymentBreakdownChart';
 import { LoanResultSummary } from '@/src/components/loan/LoanResultSummary';
 import { AppHeader } from '@/src/components/ui/AppHeader';
+import { CalculatorHeaderShell } from '@/src/components/ui/CalculatorHeaderShell';
 import { CalculatorHubNav } from '@/src/components/ui/CalculatorHubNav';
 import { CalculatorScrollView } from '@/src/components/ui/CalculatorScrollView';
 import { ExportActions } from '@/src/components/ui/ExportActions';
@@ -42,12 +43,15 @@ export default function CreditCardCalculatorScreen() {
     <GlossyBackground>
       <StatusBar style="light" />
       <CalculatorScrollView contentContainerStyle={styles.scrollContent}>
-        <AppHeader
-          title="Credit Card"
-          titleHighlight="EMI with GST"
-          subtitle="Convert card transactions into EMIs — see APR, GST on fees and interest, and the full amortization schedule."
-        />
-        <CalculatorHubNav active="credit-card" />
+        <CalculatorHeaderShell>
+          <AppHeader
+            title="Credit Card"
+            titleHighlight="EMI with GST"
+            subtitle="Convert card transactions into EMIs — see APR, GST on fees and interest, and the full amortization schedule."
+          />
+          <CalculatorHubNav active="credit-card" />
+        </CalculatorHeaderShell>
+        <View style={styles.pageContent}>
         <View style={styles.layoutGrid}>
           <View style={styles.column}>
             <View style={styles.section}>
@@ -93,6 +97,7 @@ export default function CreditCardCalculatorScreen() {
             </View>
           </View>
         </View>
+        </View>
       </CalculatorScrollView>
     </GlossyBackground>
   );
@@ -109,8 +114,10 @@ const footnoteStyles = StyleSheet.create({
 
 const styles = createResponsiveStyles({
   scrollContent: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.section,
+  },
+  pageContent: {
+    paddingHorizontal: spacing.lg,
     [media.mobile]: {
       paddingHorizontal: spacing.md,
     },

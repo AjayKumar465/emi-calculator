@@ -10,6 +10,7 @@ import { LoanCalculatorInputsCard } from '@/src/components/loan/LoanCalculatorIn
 import { LoanModeTabs } from '@/src/components/loan/LoanModeTabs';
 import { LoanResultSummary } from '@/src/components/loan/LoanResultSummary';
 import { AppHeader } from '@/src/components/ui/AppHeader';
+import { CalculatorHeaderShell } from '@/src/components/ui/CalculatorHeaderShell';
 import { CalculatorHubNav } from '@/src/components/ui/CalculatorHubNav';
 import { CalculatorScrollView } from '@/src/components/ui/CalculatorScrollView';
 import { ExportActions } from '@/src/components/ui/ExportActions';
@@ -48,17 +49,18 @@ export default function LoanCalculatorScreen() {
     <GlossyBackground>
       <StatusBar style="light" />
       <CalculatorScrollView contentContainerStyle={styles.scrollContent}>
-        <AppHeader
-          title="Loan"
-          titleHighlight="Suite"
-          subtitle="Four calculators in one — EMI, affordability, tenure, and hidden interest rate with APR and what-if prepayments."
-        />
-        <CalculatorHubNav active="loan-suite" />
+        <CalculatorHeaderShell>
+          <AppHeader
+            title="Loan"
+            titleHighlight="Suite"
+            subtitle="Four calculators in one — EMI, affordability, tenure, and hidden interest rate with APR and what-if prepayments."
+          />
+          <CalculatorHubNav active="loan-suite" />
+          <LoanModeTabs mode={inputs.mode} onChange={setMode} />
+        </CalculatorHeaderShell>
+        <View style={styles.pageContent}>
         <View style={styles.layoutGrid}>
           <View style={styles.column}>
-            <View style={styles.section}>
-              <LoanModeTabs mode={inputs.mode} onChange={setMode} />
-            </View>
             <View style={styles.section}>
               <LoanCalculatorInputsCard inputs={inputs} onChange={updateInputs} />
             </View>
@@ -94,6 +96,7 @@ export default function LoanCalculatorScreen() {
             </View>
           </View>
         </View>
+        </View>
       </CalculatorScrollView>
     </GlossyBackground>
   );
@@ -101,8 +104,10 @@ export default function LoanCalculatorScreen() {
 
 const styles = createResponsiveStyles({
   scrollContent: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.section,
+  },
+  pageContent: {
+    paddingHorizontal: spacing.lg,
     [media.mobile]: {
       paddingHorizontal: spacing.md,
     },

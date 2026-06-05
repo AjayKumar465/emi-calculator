@@ -216,14 +216,25 @@ export async function createExcelWorkbook(payload: CalculatorExportPayload): Pro
   await buildSummarySheet(workbook, payload);
   await buildBreakdownSheet(workbook, payload);
 
-  const yearly = getYearlyExportRows(payload);
-  addNumericScheduleSheet(workbook, 'Yearly Schedule', yearly.headers, yearly.rows);
+  const isInvestment = payload.amortizationYears.length === 0 && payload.investmentYearlyData;
 
-  const monthly = flattenMonthlyRows(payload.amortizationYears, payload.thirdColumnLabel);
-  addNumericScheduleSheet(workbook, 'Monthly Detail', monthly.headers, monthly.rows);
+  if (isInvestment && payload.investmentYearlyData) {
+    addNumericScheduleSheet(
+      workbook,
+      'Yearly Projection',
+      payload.investmentYearlyData.headers,
+      payload.investmentYearlyData.rows,
+    );
+  } else {
+    const yearly = getYearlyExportRows(payload);
+    addNumericScheduleSheet(workbook, 'Yearly Schedule', yearly.headers, yearly.rows);
 
-  buildChartDataSheet(workbook, payload);
-  await buildVisualChartsSheet(workbook, payload);
+    const monthly = flattenMonthlyRows(payload.amortizationYears, payload.thirdColumnLabel);
+    addNumericScheduleSheet(workbook, 'Monthly Detail', monthly.headers, monthly.rows);
+
+    buildChartDataSheet(workbook, payload);
+    await buildVisualChartsSheet(workbook, payload);
+  }
 
   return workbook;
 }

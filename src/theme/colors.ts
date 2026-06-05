@@ -43,6 +43,13 @@ export const colors = {
     interest: '#ffb347',
     taxesInsurance: '#a78bfa',
     balance: '#5BC0DE',
+    invested: '#2ec4b6',
+    returns: '#4ade80',
+    inflationErosion: '#ff6b6b',
+    deposits: '#5BC0DE',
+    interestEarned: '#ffb347',
+    futureCost: '#a78bfa',
+    todayCost: '#f472b6',
   },
 } as const;
 

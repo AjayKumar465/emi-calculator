@@ -5,13 +5,18 @@ import { HorizontalScrollArea } from './HorizontalScrollArea';
 import { colors, fonts, fontSizes, radii, spacing } from '../../theme';
 
 interface CalculatorHubNavProps {
-  active: 'home-loan' | 'loan-suite' | 'credit-card';
+  active: 'home-loan' | 'loan-suite' | 'credit-card' | 'sip' | 'ppf' | 'ssy' | 'compounding' | 'future-cost';
 }
 
 const TABS: { key: CalculatorHubNavProps['active']; href: Href; label: string }[] = [
   { key: 'home-loan', href: '/calculator', label: 'Home Loan' },
   { key: 'loan-suite', href: '/calculator/loan', label: 'Loan Suite' },
   { key: 'credit-card', href: '/calculator/credit-card', label: 'Credit Card' },
+  { key: 'sip', href: '/calculator/invest/sip', label: 'SIP' },
+  { key: 'ppf', href: '/calculator/invest/ppf', label: 'PPF' },
+  { key: 'ssy', href: '/calculator/invest/ssy', label: 'SSY' },
+  { key: 'compounding', href: '/calculator/invest/compounding', label: 'Compounding' },
+  { key: 'future-cost', href: '/calculator/invest/future-cost', label: 'Future Cost' },
 ];
 
 export function CalculatorHubNav({ active }: CalculatorHubNavProps) {

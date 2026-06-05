@@ -134,45 +134,65 @@ export async function createPdfDocument(payload: CalculatorExportPayload): Promi
     drawBreakdownFallback(doc, payload, afterSummaryY + 8);
   }
 
-  doc.addPage();
-  doc.setFillColor(42, 111, 138);
-  doc.rect(0, 0, 210, 20, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(13);
-  doc.text('Yearly Amortization Schedule', 14, 13);
+  const isInvestment = payload.amortizationYears.length === 0 && payload.investmentYearlyData;
 
-  const { headers, rows } = getYearlyExportRows(payload);
-  autoTable(doc, {
-    startY: 26,
-    head: [headers],
-    body: rows.map((row) => row.map(String)),
-    styles: { fontSize: 8, cellPadding: 2 },
-    headStyles: { fillColor: [42, 111, 138], textColor: 255 },
-    alternateRowStyles: { fillColor: [245, 248, 252] },
-  });
-
-  const monthlyStartY =
-    (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? 40;
-
-  if (monthlyStartY > 250) {
+  if (isInvestment && payload.investmentYearlyData) {
     doc.addPage();
+    doc.setFillColor(42, 111, 138);
+    doc.rect(0, 0, 210, 20, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13);
+    doc.text('Year-by-Year Projection', 14, 13);
+
+    autoTable(doc, {
+      startY: 26,
+      head: [payload.investmentYearlyData.headers],
+      body: payload.investmentYearlyData.rows.map((row) => row.map(String)),
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [42, 111, 138], textColor: 255 },
+      alternateRowStyles: { fillColor: [245, 248, 252] },
+    });
+  } else {
+    doc.addPage();
+    doc.setFillColor(42, 111, 138);
+    doc.rect(0, 0, 210, 20, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13);
+    doc.text('Yearly Amortization Schedule', 14, 13);
+
+    const { headers, rows } = getYearlyExportRows(payload);
+    autoTable(doc, {
+      startY: 26,
+      head: [headers],
+      body: rows.map((row) => row.map(String)),
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [42, 111, 138], textColor: 255 },
+      alternateRowStyles: { fillColor: [245, 248, 252] },
+    });
+
+    const monthlyStartY =
+      (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? 40;
+
+    if (monthlyStartY > 250) {
+      doc.addPage();
+    }
+
+    doc.setFillColor(42, 111, 138);
+    doc.rect(0, monthlyStartY > 250 ? 0 : monthlyStartY + 6, 210, 20, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13);
+    doc.text('Monthly Amortization Detail', 14, monthlyStartY > 250 ? 13 : monthlyStartY + 19);
+
+    const monthly = flattenMonthlyRows(payload.amortizationYears, payload.thirdColumnLabel);
+    autoTable(doc, {
+      startY: monthlyStartY > 250 ? 26 : monthlyStartY + 28,
+      head: [monthly.headers],
+      body: monthly.rows.map((row) => row.map(String)),
+      styles: { fontSize: 7, cellPadding: 1.8 },
+      headStyles: { fillColor: [42, 111, 138], textColor: 255 },
+      alternateRowStyles: { fillColor: [245, 248, 252] },
+    });
   }
-
-  doc.setFillColor(42, 111, 138);
-  doc.rect(0, monthlyStartY > 250 ? 0 : monthlyStartY + 6, 210, 20, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(13);
-  doc.text('Monthly Amortization Detail', 14, monthlyStartY > 250 ? 13 : monthlyStartY + 19);
-
-  const monthly = flattenMonthlyRows(payload.amortizationYears, payload.thirdColumnLabel);
-  autoTable(doc, {
-    startY: monthlyStartY > 250 ? 26 : monthlyStartY + 28,
-    head: [monthly.headers],
-    body: monthly.rows.map((row) => row.map(String)),
-    styles: { fontSize: 7, cellPadding: 1.8 },
-    headStyles: { fillColor: [42, 111, 138], textColor: 255 },
-    alternateRowStyles: { fillColor: [245, 248, 252] },
-  });
 
   if (payload.footnotes?.length) {
     const footnoteY =

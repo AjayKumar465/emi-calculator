@@ -10,7 +10,7 @@ import {
 } from '../inflation';
 import { LOAN_MODE_TABS } from '../loanCalculator';
 
-function toBreakdown(segments: DonutSegment[]) {
+function toBreakdown(segments: Pick<DonutSegment, 'label' | 'value' | 'color'>[]) {
   return segments.map((segment) => ({
     label: segment.label,
     value: roundAmount(segment.value),
@@ -214,6 +214,36 @@ export function buildCreditCardExportPayload(
     thirdColumnLabel: 'GST on Interest',
     footnotes: ['APR calculation excludes GST applied on processing fees and interest.'],
     fileBaseName: 'credit-card-emi-gst',
+  };
+}
+
+export function buildInvestmentExportPayload(opts: {
+  calculatorId: string;
+  calculatorName: string;
+  subtitle?: string;
+  summaryItems: { key: string; label: string; value: number; displayValue: string }[];
+  donutSegments: { key: string; label: string; value: number; color: string }[];
+  tableHeaders: string[];
+  tableRows: (string | number)[][];
+  footnotes?: string[];
+  fileBaseName: string;
+}): CalculatorExportPayload {
+  return {
+    calculatorId: opts.calculatorId,
+    calculatorName: opts.calculatorName,
+    subtitle: opts.subtitle,
+    generatedAt: new Date().toISOString(),
+    summaryRows: opts.summaryItems.map((item) => ({
+      label: item.label,
+      value: item.displayValue,
+      numericValue: roundAmount(item.value),
+    })),
+    breakdownSegments: toBreakdown(opts.donutSegments),
+    amortizationYears: [],
+    investmentYearlyData: { headers: opts.tableHeaders, rows: opts.tableRows },
+    thirdColumnLabel: '',
+    footnotes: opts.footnotes,
+    fileBaseName: opts.fileBaseName,
   };
 }
 

@@ -13,6 +13,11 @@ export interface ExportBreakdownSegment {
   color: string;
 }
 
+export interface InvestmentYearlyExportData {
+  headers: string[];
+  rows: (string | number)[][];
+}
+
 export interface CalculatorExportPayload {
   calculatorId: string;
   calculatorName: string;
@@ -23,6 +28,7 @@ export interface CalculatorExportPayload {
   amortizationYears: AmortizationYear[];
   chartData?: ChartYearData[];
   creditCardChartData?: CreditCardChartPoint[];
+  investmentYearlyData?: InvestmentYearlyExportData;
   thirdColumnLabel: string;
   footnotes?: string[];
   fileBaseName: string;

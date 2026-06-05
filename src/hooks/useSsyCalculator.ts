@@ -1,18 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { SsyCalculatorInputs } from '../types/ssyCalculator';
 import { calculateSsy } from '../utils/ssyCalculator';
 import { DEFAULT_SSY_INPUTS } from '../utils/ssyCalculatorConstants';
 import { formatCurrency } from '../utils/format';
 
+const TABLE_HEADERS = ['Year', 'Girl Age', 'Deposit', 'Interest', 'Balance', 'Real Balance'];
+
 export function useSsyCalculator(initialInputs: SsyCalculatorInputs = DEFAULT_SSY_INPUTS) {
   const [inputs, setInputs] = useState<SsyCalculatorInputs>(initialInputs);
 
   const result = useMemo(() => calculateSsy(inputs), [inputs]);
 
-  const updateInputs = (patch: Partial<SsyCalculatorInputs>) => {
+  const updateInputs = useCallback((patch: Partial<SsyCalculatorInputs>) => {
     setInputs((current) => ({ ...current, ...patch }));
-  };
+  }, []);
 
   const formattedSummary = useMemo(
     () => [
@@ -30,16 +32,20 @@ export function useSsyCalculator(initialInputs: SsyCalculatorInputs = DEFAULT_SS
   );
 
   const chartData = useMemo(
-    () => result.yearlyData.map((row) => ({
-      year: row.year,
-      invested: row.balance - row.interest,
-      nominalValue: row.balance,
-      realValue: row.realBalance,
-    })),
+    () => result.yearlyData.map((row) => {
+      const cumulativeDeposits = result.yearlyData
+        .slice(0, result.yearlyData.indexOf(row) + 1)
+        .reduce((sum, r) => sum + r.deposit, 0);
+      return {
+        year: row.year,
+        invested: cumulativeDeposits,
+        nominalValue: row.balance,
+        realValue: row.realBalance,
+      };
+    }),
     [result.yearlyData],
   );
 
-  const tableHeaders = ['Year', 'Girl Age', 'Deposit', 'Interest', 'Balance', 'Real Balance'];
   const tableRows = useMemo(
     () => result.yearlyData.map((row) => [
       row.year,
@@ -57,5 +63,5 @@ export function useSsyCalculator(initialInputs: SsyCalculatorInputs = DEFAULT_SS
     [result.maturityValue],
   );
 
-  return { inputs, result, formattedSummary, chartData, tableHeaders, tableRows, formattedLifetimeCost, updateInputs };
+  return { inputs, result, formattedSummary, chartData, tableHeaders: TABLE_HEADERS, tableRows, formattedLifetimeCost, updateInputs };
 }

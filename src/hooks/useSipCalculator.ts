@@ -1,18 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { SipCalculatorInputs } from '../types/sipCalculator';
 import { calculateSip } from '../utils/sipCalculator';
 import { DEFAULT_SIP_INPUTS } from '../utils/sipCalculatorConstants';
-import { formatCurrency, formatPercent } from '../utils/format';
+import { formatCurrency } from '../utils/format';
+
+const TABLE_HEADERS = ['Year', 'SIP/Year', 'Cumulative Invested', 'Nominal Value', 'Real Value'];
 
 export function useSipCalculator(initialInputs: SipCalculatorInputs = DEFAULT_SIP_INPUTS) {
   const [inputs, setInputs] = useState<SipCalculatorInputs>(initialInputs);
 
   const result = useMemo(() => calculateSip(inputs), [inputs]);
 
-  const updateInputs = (patch: Partial<SipCalculatorInputs>) => {
+  const updateInputs = useCallback((patch: Partial<SipCalculatorInputs>) => {
     setInputs((current) => ({ ...current, ...patch }));
-  };
+  }, []);
 
   const formattedSummary = useMemo(
     () => [
@@ -36,7 +38,6 @@ export function useSipCalculator(initialInputs: SipCalculatorInputs = DEFAULT_SI
     [result.yearlyData],
   );
 
-  const tableHeaders = ['Year', 'SIP/Year', 'Cumulative Invested', 'Nominal Value', 'Real Value'];
   const tableRows = useMemo(
     () => result.yearlyData.map((row) => [
       row.year,
@@ -53,5 +54,5 @@ export function useSipCalculator(initialInputs: SipCalculatorInputs = DEFAULT_SI
     [result.nominalMaturityValue],
   );
 
-  return { inputs, result, formattedSummary, chartData, tableHeaders, tableRows, formattedLifetimeCost, updateInputs };
+  return { inputs, result, formattedSummary, chartData, tableHeaders: TABLE_HEADERS, tableRows, formattedLifetimeCost, updateInputs };
 }

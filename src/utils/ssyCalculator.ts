@@ -4,9 +4,11 @@ import { roundAmount } from './format';
 
 export function calculateSsy(inputs: SsyCalculatorInputs): SsyCalculatorResult {
   const { annualDeposit, ssyRate, girlAge, annualInflationRate } = inputs;
-  const rate = ssyRate / 100;
+  const safeGirlAge = Math.max(0, Math.min(20, Math.floor(girlAge)));
+  const rate = Math.max(0, ssyRate) / 100;
   const safeInflation = Math.max(0, annualInflationRate);
-  const totalYears = Math.max(1, 21 - girlAge);
+  const safeDeposit = Math.max(0, annualDeposit);
+  const totalYears = 21 - safeGirlAge;
   const depositYears = Math.min(15, totalYears);
   const yearlyData: SsyYearRow[] = [];
   let balance = 0;
@@ -14,17 +16,18 @@ export function calculateSsy(inputs: SsyCalculatorInputs): SsyCalculatorResult {
   const currentYear = new Date().getFullYear();
 
   for (let yearIndex = 0; yearIndex < totalYears; yearIndex++) {
-    const deposit = yearIndex < depositYears ? annualDeposit : 0;
+    const prevBalance = balance;
+    const deposit = yearIndex < depositYears ? safeDeposit : 0;
     balance = (balance + deposit) * (1 + rate);
     totalDeposits += deposit;
-    const cumulativeInterest = roundAmount(balance - totalDeposits);
+    const yearInterest = roundAmount(balance - prevBalance - deposit);
     const realBalance = roundAmount(balance / Math.pow(1 + safeInflation / 100, yearIndex + 1));
 
     yearlyData.push({
       year: currentYear + yearIndex + 1,
-      girlAge: girlAge + yearIndex + 1,
+      girlAge: safeGirlAge + yearIndex + 1,
       deposit: roundAmount(deposit),
-      interest: cumulativeInterest,
+      interest: yearInterest,
       balance: roundAmount(balance),
       realBalance,
     });
@@ -33,7 +36,9 @@ export function calculateSsy(inputs: SsyCalculatorInputs): SsyCalculatorResult {
   const maturityValue = roundAmount(balance);
   totalDeposits = roundAmount(totalDeposits);
   const totalInterest = roundAmount(maturityValue - totalDeposits);
-  const realMaturityValue = roundAmount(maturityValue / Math.pow(1 + safeInflation / 100, totalYears));
+  const realMaturityValue = totalYears > 0
+    ? roundAmount(maturityValue / Math.pow(1 + safeInflation / 100, totalYears))
+    : maturityValue;
   const inflationErosion = roundAmount(maturityValue - realMaturityValue);
   const maturityYear = currentYear + totalYears;
 

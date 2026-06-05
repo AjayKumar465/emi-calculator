@@ -1,18 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { PpfCalculatorInputs } from '../types/ppfCalculator';
 import { calculatePpf } from '../utils/ppfCalculator';
 import { DEFAULT_PPF_INPUTS } from '../utils/ppfCalculatorConstants';
 import { formatCurrency } from '../utils/format';
 
+const TABLE_HEADERS = ['Year', 'Deposit', 'Interest', 'Balance', 'Real Balance'];
+
 export function usePpfCalculator(initialInputs: PpfCalculatorInputs = DEFAULT_PPF_INPUTS) {
   const [inputs, setInputs] = useState<PpfCalculatorInputs>(initialInputs);
 
   const result = useMemo(() => calculatePpf(inputs), [inputs]);
 
-  const updateInputs = (patch: Partial<PpfCalculatorInputs>) => {
+  const updateInputs = useCallback((patch: Partial<PpfCalculatorInputs>) => {
     setInputs((current) => ({ ...current, ...patch }));
-  };
+  }, []);
 
   const formattedSummary = useMemo(
     () => [
@@ -27,16 +29,20 @@ export function usePpfCalculator(initialInputs: PpfCalculatorInputs = DEFAULT_PP
   );
 
   const chartData = useMemo(
-    () => result.yearlyData.map((row) => ({
-      year: row.year,
-      invested: row.balance - row.interest,
-      nominalValue: row.balance,
-      realValue: row.realBalance,
-    })),
+    () => result.yearlyData.map((row) => {
+      const cumulativeDeposits = result.yearlyData
+        .slice(0, result.yearlyData.indexOf(row) + 1)
+        .reduce((sum, r) => sum + r.deposit, 0);
+      return {
+        year: row.year,
+        invested: cumulativeDeposits,
+        nominalValue: row.balance,
+        realValue: row.realBalance,
+      };
+    }),
     [result.yearlyData],
   );
 
-  const tableHeaders = ['Year', 'Deposit', 'Interest', 'Balance', 'Real Balance'];
   const tableRows = useMemo(
     () => result.yearlyData.map((row) => [
       row.year,
@@ -53,5 +59,5 @@ export function usePpfCalculator(initialInputs: PpfCalculatorInputs = DEFAULT_PP
     [result.maturityValue],
   );
 
-  return { inputs, result, formattedSummary, chartData, tableHeaders, tableRows, formattedLifetimeCost, updateInputs };
+  return { inputs, result, formattedSummary, chartData, tableHeaders: TABLE_HEADERS, tableRows, formattedLifetimeCost, updateInputs };
 }

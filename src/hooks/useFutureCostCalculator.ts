@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { FutureCostCalculatorInputs } from '../types/futureCostCalculator';
 import { calculateFutureCost } from '../utils/futureCostCalculator';
 import { DEFAULT_FUTURE_COST_INPUTS } from '../utils/futureCostCalculatorConstants';
 import { formatCurrency, formatPercent } from '../utils/format';
+
+const TABLE_HEADERS = ['Year', 'Monthly Expense', 'Annual Expense'];
 
 export function useFutureCostCalculator(
   initialInputs: FutureCostCalculatorInputs = DEFAULT_FUTURE_COST_INPUTS,
@@ -12,9 +14,9 @@ export function useFutureCostCalculator(
 
   const result = useMemo(() => calculateFutureCost(inputs), [inputs]);
 
-  const updateInputs = (patch: Partial<FutureCostCalculatorInputs>) => {
+  const updateInputs = useCallback((patch: Partial<FutureCostCalculatorInputs>) => {
     setInputs((current) => ({ ...current, ...patch }));
-  };
+  }, []);
 
   const formattedSummary = useMemo(
     () => [
@@ -40,7 +42,6 @@ export function useFutureCostCalculator(
     [result],
   );
 
-  const tableHeaders = ['Year', 'Monthly Expense', 'Annual Expense'];
   const tableRows = useMemo(
     () => result.yearlyData.map((row) => [
       row.year,
@@ -55,5 +56,5 @@ export function useFutureCostCalculator(
     [result.futureAnnualExpenses],
   );
 
-  return { inputs, result, formattedSummary, chartData, tableHeaders, tableRows, formattedLifetimeCost, updateInputs };
+  return { inputs, result, formattedSummary, chartData, tableHeaders: TABLE_HEADERS, tableRows, formattedLifetimeCost, updateInputs };
 }

@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { CompoundingCalculatorInputs } from '../types/compoundingCalculator';
 import { calculateCompounding } from '../utils/compoundingCalculator';
 import { DEFAULT_COMPOUNDING_INPUTS } from '../utils/compoundingCalculatorConstants';
 import { formatCurrency } from '../utils/format';
+
+const TABLE_HEADERS = ['Year', 'Contributions', 'Cumulative', 'Nominal Value', 'Real Value'];
 
 export function useCompoundingCalculator(
   initialInputs: CompoundingCalculatorInputs = DEFAULT_COMPOUNDING_INPUTS,
@@ -12,9 +14,9 @@ export function useCompoundingCalculator(
 
   const result = useMemo(() => calculateCompounding(inputs), [inputs]);
 
-  const updateInputs = (patch: Partial<CompoundingCalculatorInputs>) => {
+  const updateInputs = useCallback((patch: Partial<CompoundingCalculatorInputs>) => {
     setInputs((current) => ({ ...current, ...patch }));
-  };
+  }, []);
 
   const formattedSummary = useMemo(
     () => [
@@ -39,7 +41,6 @@ export function useCompoundingCalculator(
     [result.yearlyData],
   );
 
-  const tableHeaders = ['Year', 'Contributions', 'Cumulative', 'Nominal Value', 'Real Value'];
   const tableRows = useMemo(
     () => result.yearlyData.map((row) => [
       row.year,
@@ -56,5 +57,5 @@ export function useCompoundingCalculator(
     [result.nominalMaturityValue],
   );
 
-  return { inputs, result, formattedSummary, chartData, tableHeaders, tableRows, formattedLifetimeCost, updateInputs };
+  return { inputs, result, formattedSummary, chartData, tableHeaders: TABLE_HEADERS, tableRows, formattedLifetimeCost, updateInputs };
 }

@@ -4,14 +4,15 @@ import { roundAmount } from './format';
 
 export function calculateFutureCost(inputs: FutureCostCalculatorInputs): FutureCostCalculatorResult {
   const { currentMonthlyExpenses, annualInflationRate, targetYear } = inputs;
+  const safeExpenses = Math.max(0, currentMonthlyExpenses);
   const safeInflation = Math.max(0, annualInflationRate);
   const currentYear = new Date().getFullYear();
-  const yearsAhead = Math.max(0, targetYear - currentYear);
-  const currentAnnualExpenses = roundAmount(currentMonthlyExpenses * 12);
+  const yearsAhead = Math.max(0, Math.floor(targetYear - currentYear));
+  const currentAnnualExpenses = roundAmount(safeExpenses * 12);
   const yearlyData: FutureCostYearRow[] = [];
 
   for (let i = 0; i <= yearsAhead; i++) {
-    const monthlyExpense = roundAmount(currentMonthlyExpenses * Math.pow(1 + safeInflation / 100, i));
+    const monthlyExpense = roundAmount(safeExpenses * Math.pow(1 + safeInflation / 100, i));
     yearlyData.push({
       year: currentYear + i,
       monthlyExpense,
@@ -19,7 +20,7 @@ export function calculateFutureCost(inputs: FutureCostCalculatorInputs): FutureC
     });
   }
 
-  const futureMonthlyExpenses = roundAmount(currentMonthlyExpenses * Math.pow(1 + safeInflation / 100, yearsAhead));
+  const futureMonthlyExpenses = roundAmount(safeExpenses * Math.pow(1 + safeInflation / 100, yearsAhead));
   const futureAnnualExpenses = roundAmount(futureMonthlyExpenses * 12);
   const additionalCostDueToInflation = roundAmount(futureAnnualExpenses - currentAnnualExpenses);
   const purchasingPowerLossPercent = yearsAhead > 0

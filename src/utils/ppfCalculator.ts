@@ -4,24 +4,26 @@ import { roundAmount } from './format';
 
 export function calculatePpf(inputs: PpfCalculatorInputs): PpfCalculatorResult {
   const { annualDeposit, ppfRate, tenureYears, annualInflationRate } = inputs;
-  const rate = ppfRate / 100;
+  const safeTenure = Math.max(0, Math.floor(tenureYears));
+  const rate = Math.max(0, ppfRate) / 100;
   const safeInflation = Math.max(0, annualInflationRate);
+  const safeDeposit = Math.max(0, annualDeposit);
   const yearlyData: PpfYearRow[] = [];
   let balance = 0;
   let totalDeposits = 0;
   const currentYear = new Date().getFullYear();
 
-  for (let yearIndex = 0; yearIndex < tenureYears; yearIndex++) {
-    const deposit = annualDeposit;
-    balance = (balance + deposit) * (1 + rate);
-    totalDeposits += deposit;
-    const interest = roundAmount(balance - totalDeposits);
+  for (let yearIndex = 0; yearIndex < safeTenure; yearIndex++) {
+    const prevBalance = balance;
+    balance = (balance + safeDeposit) * (1 + rate);
+    totalDeposits += safeDeposit;
+    const yearInterest = roundAmount(balance - prevBalance - safeDeposit);
     const realBalance = roundAmount(balance / Math.pow(1 + safeInflation / 100, yearIndex + 1));
 
     yearlyData.push({
       year: currentYear + yearIndex + 1,
-      deposit: roundAmount(deposit),
-      interest,
+      deposit: roundAmount(safeDeposit),
+      interest: yearInterest,
       balance: roundAmount(balance),
       realBalance,
     });
@@ -30,7 +32,9 @@ export function calculatePpf(inputs: PpfCalculatorInputs): PpfCalculatorResult {
   const maturityValue = roundAmount(balance);
   totalDeposits = roundAmount(totalDeposits);
   const totalInterest = roundAmount(maturityValue - totalDeposits);
-  const realMaturityValue = roundAmount(maturityValue / Math.pow(1 + safeInflation / 100, tenureYears));
+  const realMaturityValue = safeTenure > 0
+    ? roundAmount(maturityValue / Math.pow(1 + safeInflation / 100, safeTenure))
+    : maturityValue;
   const inflationErosion = roundAmount(maturityValue - realMaturityValue);
 
   const donutSegments = ([

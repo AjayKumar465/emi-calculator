@@ -4,15 +4,18 @@ import { roundAmount } from './format';
 
 export function calculateSip(inputs: SipCalculatorInputs): SipCalculatorResult {
   const { monthlyInvestment, expectedReturnRate, tenureYears, annualInflationRate, annualStepUpRate } = inputs;
-  const monthlyRate = expectedReturnRate / 12 / 100;
+  const safeTenure = Math.max(0, Math.floor(tenureYears));
+  const safeSip = Math.max(0, monthlyInvestment);
+  const monthlyRate = Math.max(0, expectedReturnRate) / 12 / 100;
   const safeInflation = Math.max(0, annualInflationRate);
+  const safeStepUp = Math.max(0, annualStepUpRate);
   const yearlyData: SipYearRow[] = [];
   let totalInvested = 0;
   let corpusValue = 0;
   const currentYear = new Date().getFullYear();
 
-  for (let yearIndex = 0; yearIndex < tenureYears; yearIndex++) {
-    const monthlySip = roundAmount(monthlyInvestment * Math.pow(1 + annualStepUpRate / 100, yearIndex));
+  for (let yearIndex = 0; yearIndex < safeTenure; yearIndex++) {
+    const monthlySip = roundAmount(safeSip * Math.pow(1 + safeStepUp / 100, yearIndex));
     let yearInvested = 0;
 
     for (let month = 0; month < 12; month++) {
@@ -35,7 +38,9 @@ export function calculateSip(inputs: SipCalculatorInputs): SipCalculatorResult {
   const nominalMaturityValue = roundAmount(corpusValue);
   totalInvested = roundAmount(totalInvested);
   const nominalReturns = roundAmount(nominalMaturityValue - totalInvested);
-  const realMaturityValue = roundAmount(nominalMaturityValue / Math.pow(1 + safeInflation / 100, tenureYears));
+  const realMaturityValue = safeTenure > 0
+    ? roundAmount(nominalMaturityValue / Math.pow(1 + safeInflation / 100, safeTenure))
+    : nominalMaturityValue;
   const inflationErosion = roundAmount(nominalMaturityValue - realMaturityValue);
 
   const donutSegments = ([

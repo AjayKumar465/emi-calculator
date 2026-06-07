@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
+import * as Print from 'expo-print';
 
 import { CalculatorExportPayload } from '../../types/export';
 
@@ -59,15 +60,23 @@ export async function exportCalculatorExcel(payload: CalculatorExportPayload): P
 }
 
 export async function exportCalculatorPdf(payload: CalculatorExportPayload): Promise<void> {
-  const fileName = getFileName(payload, 'pdf');
-  const { createPdfArrayBuffer, createPdfBase64 } = await import('./exportPdf');
-
   if (Platform.OS === 'web') {
+    const fileName = getFileName(payload, 'pdf');
+    const { createPdfArrayBuffer } = await import('./exportPdf');
     downloadOnWeb(await createPdfArrayBuffer(payload), fileName, 'application/pdf');
     return;
   }
 
-  await saveAndShareNative(await createPdfBase64(payload), fileName, 'application/pdf');
+  const { buildPdfHtml } = await import('./exportPdfNative');
+  const html = buildPdfHtml(payload);
+  const { uri } = await Print.printToFileAsync({ html, base64: false });
+
+  const targetUri = `${FileSystem.documentDirectory ?? ''}${getFileName(payload, 'pdf')}`;
+  await FileSystem.moveAsync({ from: uri, to: targetUri });
+
+  if (await Sharing.isAvailableAsync()) {
+    await Sharing.shareAsync(targetUri, { mimeType: 'application/pdf' });
+  }
 }
 
 export async function shareCalculatorLink(payload: CalculatorExportPayload): Promise<void> {

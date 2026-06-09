@@ -9,10 +9,6 @@ import {
   JetBrainsMono_500Medium,
   JetBrainsMono_700Bold,
 } from '@expo-google-fonts/jetbrains-mono';
-import {
-  PlayfairDisplay_700Bold,
-  PlayfairDisplay_700Bold_Italic,
-} from '@expo-google-fonts/playfair-display';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -25,8 +21,6 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    PlayfairDisplay_700Bold,
-    PlayfairDisplay_700Bold_Italic,
     DMSans_400Regular,
     DMSans_500Medium,
     DMSans_600SemiBold,

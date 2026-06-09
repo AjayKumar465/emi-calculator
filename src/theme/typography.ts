@@ -1,6 +1,6 @@
 export const fonts = {
-  display: 'PlayfairDisplay_700Bold',
-  displayItalic: 'PlayfairDisplay_700Bold_Italic',
+  display: 'DMSans_700Bold',
+  displayItalic: 'DMSans_700Bold',
   body: 'DMSans_400Regular',
   bodyMedium: 'DMSans_500Medium',
   bodySemiBold: 'DMSans_600SemiBold',

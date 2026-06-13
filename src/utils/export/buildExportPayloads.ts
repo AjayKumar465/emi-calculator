@@ -1,4 +1,4 @@
-import { CalculatorExportPayload } from '../../types/export';
+import { CalculatorExportPayload, InvestmentChartPoint } from '../../types/export';
 import { CalculatorInputs, CalculatorResult, DonutSegment, SummaryLineItem } from '../../types/calculator';
 import { CreditCardCalculatorInputs, CreditCardCalculatorResult } from '../../types/creditCardCalculator';
 import { LoanCalculatorInputs, LoanCalculatorResult } from '../../types/loanCalculator';
@@ -223,6 +223,7 @@ export function buildInvestmentExportPayload(opts: {
   subtitle?: string;
   summaryItems: { key: string; label: string; value: number; displayValue: string }[];
   donutSegments: { key: string; label: string; value: number; color: string }[];
+  investmentChartData?: InvestmentChartPoint[];
   tableHeaders: string[];
   tableRows: (string | number)[][];
   footnotes?: string[];
@@ -240,6 +241,7 @@ export function buildInvestmentExportPayload(opts: {
     })),
     breakdownSegments: toBreakdown(opts.donutSegments),
     amortizationYears: [],
+    investmentChartData: opts.investmentChartData,
     investmentYearlyData: { headers: opts.tableHeaders, rows: opts.tableRows },
     thirdColumnLabel: '',
     footnotes: opts.footnotes,

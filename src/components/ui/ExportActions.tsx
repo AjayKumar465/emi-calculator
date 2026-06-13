@@ -5,7 +5,6 @@ import { CalculatorExportPayload } from '../../types/export';
 import {
   exportCalculatorExcel,
   exportCalculatorPdf,
-  shareCalculatorLink,
 } from '../../utils/export/downloadExport';
 import { colors, fonts, fontSizes, spacing } from '../../theme';
 import { Button } from './Button';
@@ -17,21 +16,19 @@ interface ExportActionsProps {
 }
 
 export function ExportActions({ payload }: ExportActionsProps) {
-  const [busyAction, setBusyAction] = useState<'pdf' | 'excel' | 'share' | null>(null);
+  const [busyAction, setBusyAction] = useState<'pdf' | 'excel' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const runExport = useCallback(
-    async (action: 'pdf' | 'excel' | 'share') => {
+    async (action: 'pdf' | 'excel') => {
       setBusyAction(action);
       setError(null);
 
       try {
         if (action === 'pdf') {
           await exportCalculatorPdf(payload);
-        } else if (action === 'excel') {
-          await exportCalculatorExcel(payload);
         } else {
-          await shareCalculatorLink(payload);
+          await exportCalculatorExcel(payload);
         }
       } catch (exportError) {
         const message =
@@ -47,8 +44,8 @@ export function ExportActions({ payload }: ExportActionsProps) {
   return (
     <Card>
       <SectionHeader
-        title="Export & Share"
-        subtitle="Download a rich PDF or Excel workbook with summary, charts, and full amortization"
+        title="Export"
+        subtitle="Download a PDF or Excel workbook with summary, charts, and full schedules"
       />
       <View style={styles.actions}>
         <Button
@@ -64,13 +61,6 @@ export function ExportActions({ payload }: ExportActionsProps) {
           style={styles.actionButton}
           variant="ghost"
         />
-        <Button
-          disabled={busyAction !== null}
-          label={busyAction === 'share' ? 'Sharing…' : 'Share Link'}
-          onPress={() => runExport('share')}
-          style={styles.actionButton}
-          variant="ghost"
-        />
       </View>
       {busyAction ? (
         <View style={styles.loadingRow}>
@@ -80,7 +70,7 @@ export function ExportActions({ payload }: ExportActionsProps) {
       ) : null}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <Text style={styles.hint}>
-        Excel sheets use plain numbers (no ₹ symbol) so you can continue calculating in spreadsheets.
+        Exports include donut breakdown and schedule/growth charts. Excel sheets use plain numbers so you can continue calculating in spreadsheets.
       </Text>
     </Card>
   );

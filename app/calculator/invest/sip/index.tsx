@@ -29,11 +29,12 @@ export default function SipCalculatorScreen() {
         subtitle: 'Systematic Investment Plan with step-up',
         summaryItems: formattedSummary,
         donutSegments: result.donutSegments,
+        investmentChartData: chartData,
         tableHeaders,
         tableRows,
         fileBaseName: 'sip-calculator',
       }),
-    [formattedSummary, result.donutSegments, tableHeaders, tableRows],
+    [formattedSummary, result.donutSegments, chartData, tableHeaders, tableRows],
   );
 
   return (

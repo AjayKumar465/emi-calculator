@@ -1,6 +1,13 @@
 import { AmortizationYear, ChartYearData, DonutSegment } from './calculator';
 import { CreditCardChartPoint } from './creditCardCalculator';
 
+export interface InvestmentChartPoint {
+  year: number;
+  invested: number;
+  nominalValue: number;
+  realValue: number;
+}
+
 export interface ExportSummaryRow {
   label: string;
   value: string;
@@ -28,6 +35,7 @@ export interface CalculatorExportPayload {
   amortizationYears: AmortizationYear[];
   chartData?: ChartYearData[];
   creditCardChartData?: CreditCardChartPoint[];
+  investmentChartData?: InvestmentChartPoint[];
   investmentYearlyData?: InvestmentYearlyExportData;
   thirdColumnLabel: string;
   footnotes?: string[];

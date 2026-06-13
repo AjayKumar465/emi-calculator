@@ -29,11 +29,12 @@ export default function PpfCalculatorScreen() {
         subtitle: 'Public Provident Fund with annual compounding',
         summaryItems: formattedSummary,
         donutSegments: result.donutSegments,
+        investmentChartData: chartData,
         tableHeaders,
         tableRows,
         fileBaseName: 'ppf-calculator',
       }),
-    [formattedSummary, result.donutSegments, tableHeaders, tableRows],
+    [formattedSummary, result.donutSegments, chartData, tableHeaders, tableRows],
   );
 
   return (

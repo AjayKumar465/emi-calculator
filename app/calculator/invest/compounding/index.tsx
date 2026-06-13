@@ -29,11 +29,12 @@ export default function CompoundingCalculatorScreen() {
         subtitle: 'Flexible compounding with periodic contributions',
         summaryItems: formattedSummary,
         donutSegments: result.donutSegments,
+        investmentChartData: chartData,
         tableHeaders,
         tableRows,
         fileBaseName: 'compounding-calculator',
       }),
-    [formattedSummary, result.donutSegments, tableHeaders, tableRows],
+    [formattedSummary, result.donutSegments, chartData, tableHeaders, tableRows],
   );
 
   return (

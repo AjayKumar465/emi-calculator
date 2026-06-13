@@ -71,7 +71,7 @@ function drawBreakdownFallback(
 function addChartImagesPage(
   doc: jsPDF,
   payload: CalculatorExportPayload,
-  charts: { breakdownDonutPng: string; scheduleChartPng: string },
+  charts: { breakdownDonutPng: string; secondaryChartPng: string | null },
 ) {
   doc.addPage();
   doc.setFillColor(42, 111, 138);
@@ -91,14 +91,16 @@ function addChartImagesPage(
     86,
   );
 
-  doc.addImage(
-    `data:image/png;base64,${charts.scheduleChartPng}`,
-    'PNG',
-    10,
-    122,
-    190,
-    96,
-  );
+  if (charts.secondaryChartPng) {
+    doc.addImage(
+      `data:image/png;base64,${charts.secondaryChartPng}`,
+      'PNG',
+      10,
+      122,
+      190,
+      96,
+    );
+  }
 }
 
 export async function createPdfDocument(payload: CalculatorExportPayload): Promise<jsPDF> {

@@ -1,6 +1,7 @@
 import { CalculatorExportPayload } from '../../types/export';
 import { roundAmount } from '../format';
 import { flattenMonthlyRows, getYearlyExportRows } from './buildExportPayloads';
+import { renderExportChartSvgs } from './chartSvg';
 
 function esc(text: string | number): string {
   return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -80,6 +81,21 @@ function buildScheduleTables(payload: CalculatorExportPayload): string {
   );
 }
 
+function buildChartsSection(payload: CalculatorExportPayload): string {
+  const { breakdownDonutSvg, secondaryChartSvg } = renderExportChartSvgs(payload);
+  if (!breakdownDonutSvg) return '';
+
+  const secondary = secondaryChartSvg
+    ? `<div style="margin-top:16px;page-break-inside:avoid">${secondaryChartSvg}</div>`
+    : '';
+
+  return `<div style="margin:20px 0;page-break-inside:avoid">
+    <h3 style="color:#2a6f8a;font-size:14px;margin-bottom:10px">Visual Analytics</h3>
+    <div style="width:100%;overflow:hidden">${breakdownDonutSvg}</div>
+    ${secondary}
+  </div>`;
+}
+
 export function buildPdfHtml(payload: CalculatorExportPayload): string {
   const date = new Date(payload.generatedAt).toLocaleString('en-IN');
 
@@ -104,6 +120,7 @@ export function buildPdfHtml(payload: CalculatorExportPayload): string {
   <div style="font-size:11px;margin-top:4px;opacity:0.85">${esc(payload.subtitle ?? 'EMI Calculator Report')} · ${esc(date)}</div>
 </div>
 ${buildSummaryTable(payload)}
+${buildChartsSection(payload)}
 ${buildBreakdownSection(payload)}
 ${buildScheduleTables(payload)}
 ${footnotes}

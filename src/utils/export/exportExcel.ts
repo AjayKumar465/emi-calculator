@@ -131,12 +131,11 @@ async function buildVisualChartsSheet(
   sheet.getCell('A1').value = 'Embedded export charts';
   sheet.getCell('A1').font = { bold: true, size: 16, color: { argb: 'FF2A6F8A' } };
   sheet.getCell('A2').value =
-    'Donut breakdown and repayment schedule rendered from your current calculator inputs.';
+    'Donut breakdown and schedule/growth charts rendered from your current calculator inputs.';
 
   const charts = await renderExportCharts(payload);
   if (!charts) {
-    sheet.getCell('A4').value =
-      'Chart rendering is available on web exports. Data sheets still include full numeric chart data.';
+    sheet.getCell('A4').value = 'No chart data available for this calculator.';
     return;
   }
 
@@ -149,16 +148,39 @@ async function buildVisualChartsSheet(
     ext: { width: 760, height: 350 },
   });
 
-  const scheduleImageId = workbook.addImage({
-    base64: charts.scheduleChartPng,
-    extension: 'png',
-  });
-  sheet.addImage(scheduleImageId, {
-    tl: { col: 0, row: 22 },
-    ext: { width: 980, height: 470 },
-  });
+  if (charts.secondaryChartPng) {
+    const scheduleImageId = workbook.addImage({
+      base64: charts.secondaryChartPng,
+      extension: 'png',
+    });
+    sheet.addImage(scheduleImageId, {
+      tl: { col: 0, row: 22 },
+      ext: { width: 980, height: 470 },
+    });
+  }
 
   sheet.getColumn(1).width = 14;
+}
+
+function buildInvestmentChartDataSheet(
+  workbook: ExcelJS.Workbook,
+  payload: CalculatorExportPayload,
+) {
+  if (!payload.investmentChartData?.length) {
+    return;
+  }
+
+  addNumericScheduleSheet(
+    workbook,
+    'Chart Data',
+    ['Year', 'Invested', 'Nominal Value', 'Real Value'],
+    payload.investmentChartData.map((point) => [
+      point.year,
+      roundAmount(point.invested),
+      roundAmount(point.nominalValue),
+      roundAmount(point.realValue),
+    ]),
+  );
 }
 
 function buildChartDataSheet(workbook: ExcelJS.Workbook, payload: CalculatorExportPayload) {
@@ -225,6 +247,8 @@ export async function createExcelWorkbook(payload: CalculatorExportPayload): Pro
       payload.investmentYearlyData.headers,
       payload.investmentYearlyData.rows,
     );
+    buildInvestmentChartDataSheet(workbook, payload);
+    await buildVisualChartsSheet(workbook, payload);
   } else {
     const yearly = getYearlyExportRows(payload);
     addNumericScheduleSheet(workbook, 'Yearly Schedule', yearly.headers, yearly.rows);

@@ -29,11 +29,12 @@ export default function SsyCalculatorScreen() {
         subtitle: 'Sukanya Samriddhi Yojana',
         summaryItems: formattedSummary,
         donutSegments: result.donutSegments,
+        investmentChartData: chartData,
         tableHeaders,
         tableRows,
         fileBaseName: 'ssy-calculator',
       }),
-    [formattedSummary, result.donutSegments, tableHeaders, tableRows],
+    [formattedSummary, result.donutSegments, chartData, tableHeaders, tableRows],
   );
 
   return (

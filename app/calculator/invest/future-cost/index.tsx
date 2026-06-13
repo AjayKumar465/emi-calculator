@@ -29,11 +29,12 @@ export default function FutureCostCalculatorScreen() {
         subtitle: 'Inflation-adjusted expense projection',
         summaryItems: formattedSummary,
         donutSegments: result.donutSegments,
+        investmentChartData: chartData,
         tableHeaders,
         tableRows,
         fileBaseName: 'future-cost-planner',
       }),
-    [formattedSummary, result.donutSegments, tableHeaders, tableRows],
+    [formattedSummary, result.donutSegments, chartData, tableHeaders, tableRows],
   );
 
   return (

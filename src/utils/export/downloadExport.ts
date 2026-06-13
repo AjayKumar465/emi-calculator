@@ -78,23 +78,3 @@ export async function exportCalculatorPdf(payload: CalculatorExportPayload): Pro
     await Sharing.shareAsync(targetUri, { mimeType: 'application/pdf' });
   }
 }
-
-export async function shareCalculatorLink(payload: CalculatorExportPayload): Promise<void> {
-  const url =
-    Platform.OS === 'web' && typeof window !== 'undefined'
-      ? `${window.location.origin}/calculator?from=${payload.calculatorId}`
-      : `emi-calculator://${payload.calculatorId}`;
-
-  if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
-    await navigator.share({
-      title: payload.calculatorName,
-      text: 'EMI calculation snapshot',
-      url,
-    });
-    return;
-  }
-
-  if (await Sharing.isAvailableAsync()) {
-    await Sharing.shareAsync(url);
-  }
-}

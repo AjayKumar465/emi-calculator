@@ -23,7 +23,12 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "EMI Calculator",
+      "shortName": "EMI Calc",
+      "description": "Free EMI calculator for home loans, personal loans, credit cards, SIP, PPF, SSY and more with inflation-adjusted results and PDF export.",
+      "themeColor": "#0a1628",
+      "backgroundColor": "#0a1628"
     },
     "plugins": [
       "expo-router",

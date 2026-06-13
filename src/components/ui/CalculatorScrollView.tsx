@@ -7,6 +7,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import { CalculatorSeoSection } from '../seo/CalculatorSeoSection';
+
 interface CalculatorScrollViewProps extends ScrollViewProps {
   children: ReactNode;
 }
@@ -29,6 +31,7 @@ export function CalculatorScrollView({
       {...rest}
     >
       {children}
+      <CalculatorSeoSection />
     </ScrollView>
   );
 }
